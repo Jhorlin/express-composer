@@ -27,7 +27,7 @@
             });
 
 
-            it("should reset a parent scope extended from an object", function (done) {
+            it("should set a parent scope extended from an object", function (done) {
                 var parentProperties = {
                         name: 'test',
                         age: 33
@@ -45,6 +45,37 @@
                             try{
                                 scope.should.have.property('name', 'testSet');
                                 scope.should.have.property('age', 19);
+                                done();
+                            } catch(err){
+                                done(err);
+                            }
+                        });
+                    } catch(err){
+                        done(err);
+                    }
+                });
+            });
+
+            it("should set a parent scope extended from an object and unset any old values", function (done) {
+                var parentProperties = {
+                        name: 'test',
+                        age: 33
+                    },
+                    scope = new Scope(parentProperties, true);
+                scope.ready(function(){
+                    try{
+                        should.exist(scope);
+                        scope.should.have.property('name', 'test');
+                        scope.should.have.property('age', 33);
+                        scope.set({
+                            nameSet: 'testSet',
+                            ageSet: 21
+                        })(function(){
+                            try{
+                                scope.should.have.property('nameSet', 'testSet');
+                                scope.should.have.property('ageSet', 21);
+                                (scope.name === undefined).should.be.true;
+                                (scope.age === undefined).should.be.true;
                                 done();
                             } catch(err){
                                 done(err);
