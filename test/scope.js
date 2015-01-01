@@ -264,7 +264,6 @@
             });
 
         });
-
     });
 
 }(require('./../lib/scope'), require('should'), require('q')));
