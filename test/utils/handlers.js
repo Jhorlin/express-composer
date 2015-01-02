@@ -45,8 +45,8 @@
                 q.when(typeof value === 'function' ? value() : value).then(function () {
                     var properties = property.split('.'),
                         lastIndex = properties.length - 1,
-                        object = this;
-                    properties.split('.').forEach(function (property, index) {
+                        object = self;
+                    properties.forEach(function (property, index) {
                         if (index === lastIndex) {
                             object[property] = value;
                         } else {
@@ -67,7 +67,7 @@
             var handler = function (req, res) {
                 var properties = property.split('.'),
                     object = this;
-                properties.split('.').forEach(function (property) {
+                properties.forEach(function (property) {
                     object = object[property];
                 });
                 res.send(object);
