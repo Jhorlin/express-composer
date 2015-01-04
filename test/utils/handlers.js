@@ -82,7 +82,7 @@
         },
         error: function () {
             var handler = function (err, req, res) {
-                res.status(req.status).send(err.message);
+                res.status(500).send(err.message);
             };
             return createErrorHandlerTypes(handler);
         }
