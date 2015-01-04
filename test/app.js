@@ -5,7 +5,7 @@
     describe("Test express composer composition and routes", function () {
         var handlerTypes = ['standard', 'promise', 'callback'];
         handlerTypes.forEach(function (handlerType) {
-            describe.skip("test that we can create a simple hello world route with handlerType " + handlerType, function () {
+            describe("test that we can create a simple hello world route with handlerType " + handlerType, function () {
                 var app,
                     message = "hello world"
                 before(function () {
@@ -43,7 +43,7 @@
                 });
             });
 
-            describe.skip("test route has access to scope with handlerType " + handlerType, function () {
+            describe("test route has access to scope with handlerType " + handlerType, function () {
                 var app,
                     message = "hello world";
                 before(function () {
@@ -83,7 +83,7 @@
 
             });
 
-            describe.skip("test route validator for handlerType " + handlerType, function () {
+            describe("test route validator for handlerType " + handlerType, function () {
                 var app,
                     message = "hello world",
                     validator = joi.object({
@@ -139,7 +139,7 @@
                 });
             });
 
-            describe.skip("test method error for handlerType " + handlerType, function () {
+            describe("test method error for handlerType " + handlerType, function () {
                 var app,
                     message = "oops";
                 before(function () {
@@ -199,6 +199,48 @@
                             },
                             errorHandlers:[handlers.error()[handlerType]]
                         }]
+                    });
+                });
+
+                it("should return the error thrown", function (done) {
+                    var request = supertest(app);
+                    request
+                        .get('/')
+                        .expect(500)
+                        .end(function (err, res) {
+                            if (err) {
+                                return done(err);
+                            }
+                            try{
+                                res.text.should.equal(message);
+                                done();
+                            } catch(e){
+                                done(e);
+                            }
+
+                        });
+                });
+
+            });
+
+            describe("test router error for handlerType " + handlerType, function () {
+                var app,
+                    message = "oops";
+                before(function () {
+                    app = expressComposer();
+                    should.exist(app);
+                });
+
+                it("should compose a route with a base path of '/' that throws an error " + message, function () {
+                    app.compose({
+                        routes: [{
+                            methods: {
+                                get: {
+                                    handlers: [handlers.throwError(message)[handlerType]]
+                                }
+                            }
+                        }],
+                        errorHandlers:[handlers.error()[handlerType]]
                     });
                 });
 
