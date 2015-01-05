@@ -265,6 +265,129 @@
 
             });
 
+            describe("test method preHandler for handlerType " + handlerType, function(){
+                var app,
+                    message = "hello world";
+                before(function () {
+                    app = expressComposer();
+                    should.exist(app);
+                });
+
+                it("should compose a route with a base path of '/' that throws an error " + message, function () {
+                    app.compose({
+                        routes: [{
+                            methods: {
+                                get: {
+                                    handlers: [handlers.respondScope("message")[handlerType]],
+                                    preHandlers : [handlers.setScope("message", message)[handlerType]]
+                                }
+                            }
+                        }]
+                    });
+                });
+
+                it("should return the error thrown", function (done) {
+                    var request = supertest(app);
+                    request
+                        .get('/')
+                        .expect(200)
+                        .end(function (err, res) {
+                            if (err) {
+                                return done(err);
+                            }
+                            try{
+                                res.text.should.equal(message);
+                                done();
+                            } catch(e){
+                                done(e);
+                            }
+
+                        });
+                });
+            });
+
+            describe("test route preHandler for handlerType " + handlerType, function(){
+                var app,
+                    message = "hello world";
+                before(function () {
+                    app = expressComposer();
+                    should.exist(app);
+                });
+
+                it("should compose a route with a base path of '/' that throws an error " + message, function () {
+                    app.compose({
+                        routes: [{
+                            methods: {
+                                get: {
+                                    handlers: [handlers.respondScope("message")[handlerType]]
+                                }
+                            },
+                            preHandlers : [handlers.setScope("message", message)[handlerType]]
+                        }]
+                    });
+                });
+
+                it("should return the error thrown", function (done) {
+                    var request = supertest(app);
+                    request
+                        .get('/')
+                        .expect(200)
+                        .end(function (err, res) {
+                            if (err) {
+                                return done(err);
+                            }
+                            try{
+                                res.text.should.equal(message);
+                                done();
+                            } catch(e){
+                                done(e);
+                            }
+
+                        });
+                });
+            });
+
+            describe("test router preHandler for handlerType " + handlerType, function(){
+                var app,
+                    message = "hello world";
+                before(function () {
+                    app = expressComposer();
+                    should.exist(app);
+                });
+
+                it("should compose a route with a base path of '/' that throws an error " + message, function () {
+                    app.compose({
+                        routes: [{
+                            methods: {
+                                get: {
+                                    handlers: [handlers.respondScope("message")[handlerType]]
+                                }
+                            }
+                        }],
+                        preHandlers : [handlers.setScope("message", message)[handlerType]],
+                    });
+                });
+
+                it("should return the error thrown", function (done) {
+                    var request = supertest(app);
+                    request
+                        .get('/')
+                        .expect(200)
+                        .end(function (err, res) {
+                            if (err) {
+                                return done(err);
+                            }
+                            try{
+                                res.text.should.equal(message);
+                                done();
+                            } catch(e){
+                                done(e);
+                            }
+
+                        });
+                });
+            });
+
         });
     });
 }(require('../index'), require('should'), require('supertest'), require('./utils/handlers'), require('joi')))
