@@ -4,7 +4,8 @@
   "description": "A composition library to help organize your express routes and handlers",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "test-coverage": "istanbul cover node_modules/mocha/bin/_mocha -- --check-leaks --reporter dot test/"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
   },
   "homepage": "https://github.com/Jhorlin/express-composer",
   "devDependencies": {
+    "istanbul": "^0.3.5",
     "mocha": "^2.1.0",
     "should": "^4.4.2"
   },
