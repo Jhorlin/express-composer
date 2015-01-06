@@ -5,7 +5,9 @@
     "use strict";
 
     describe("Test express composer composition and routes", function () {
-        var handlerTypes = ['standard', 'promise', 'callback'];
+        var handlerTypes = ['standard', 'promise', 'callback'],
+            paths = [undefined, '/test'];
+
         handlerTypes.forEach(function (handlerType) {
             describe("test that we can create a simple hello world route with handlerType " + handlerType, function () {
                 var app,
