@@ -1,0 +1,37 @@
+{
+  "name": "express-composer",
+  "version": "0.0.0",
+  "description": "A composition library to help organize your express routes and handlers",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jhorlin/express-composer.git"
+  },
+  "keywords": [
+    "express",
+    "handlers",
+    "composition",
+    "organize"
+  ],
+  "author": "Jhorlin De Armas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jhorlin/express-composer/issues"
+  },
+  "homepage": "https://github.com/Jhorlin/express-composer",
+  "devDependencies": {
+    "mocha": "^2.1.0",
+    "should": "^4.4.2"
+  },
+  "dependencies": {
+    "express": "^4.10.4",
+    "extend": "^2.0.0",
+    "joi": "^5.0.2",
+    "q": "^1.1.2",
+    "supertest": "^0.15.0",
+    "utils-merge": "^1.0.0"
+  }
+}
