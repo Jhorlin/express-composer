@@ -8,6 +8,12 @@
                 var scope = new Scope();
                 should.exist(scope);
             });
+
+            it("should create an instance of a scope with out new", function () {
+                var scope = Scope();
+                should.exist(scope);
+            });
+
             var argument = {
                     name: 'test',
                     age: 33
