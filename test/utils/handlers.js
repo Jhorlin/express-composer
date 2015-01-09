@@ -53,7 +53,6 @@
                             object = object[property];
                         }
                     });
-                    debugger;
                 });
             };
             return createHandlerTypes(handler);
