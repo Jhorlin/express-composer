@@ -417,16 +417,16 @@
                         score = {
                             routers: [
                                 {
-                                    path:path.router,
+                                    path: path.router,
                                     routes: [{
-                                        path:path.route,
+                                        path: path.route,
                                         methods: {
                                             get: {
                                                 handlers: [handlers.respondScope("message")[handlerType]]
                                             }
                                         }
                                     }],
-                                    preHandlers: [handlers.setScope("message", message)[handlerType]],
+                                    preHandlers: [handlers.setScope("message", message)[handlerType]]
                                 }
                             ]
                         };
@@ -459,6 +459,57 @@
                     });
                 });
 
+                describe(util.format("test router preHandler order for handlerType:%s routerPath:%s routePath:%s",
+                    handlerType, path.router || 'Default', path.route || 'Default'), function () {
+                    var app,
+                        message = "hello world",
+                        score = {
+                            routers: [
+                                {
+                                    path: path.router,
+                                    scope: {
+                                        items: []
+                                    },
+                                    routes: [{
+                                        path: path.route,
+                                        methods: {
+                                            get: {
+                                                handlers: [handlers.respondScope("message")[handlerType]]
+                                            }
+                                        }
+                                    }],
+                                    preHandlers: [handlers.setScope("message", message)[handlerType]]
+                                }
+                            ]
+                        };
+                    before(function () {
+                        app = expressComposer();
+                        should.exist(app);
+                    });
+
+                    it(util.format("should compose a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
+                        app.compose(score);
+                    });
+
+                    it("should return the error thrown", function (done) {
+                        var request = supertest(app);
+                        request
+                            .get([path.router, path.route].join('') || '/')
+                            .expect(200)
+                            .end(function (err, res) {
+                                if (err) {
+                                    return done(err);
+                                }
+                                try {
+                                    res.text.should.equal(message);
+                                    done();
+                                } catch (e) {
+                                    done(e);
+                                }
+
+                            });
+                    });
+                });
             });
         });
     });
