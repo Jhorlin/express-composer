@@ -267,6 +267,53 @@
 
                 });
 
+                describe(util.format("test route method array handler for handlerType:%s routerPath:%s routePath:%s",
+                    handlerType, path.router || 'Default', path.route || 'Default'), function () {
+                    var app,
+                        message = "hello world",
+                        score = {
+                            routers: [
+                                {
+                                    path: path.router,
+                                    routes: [{
+                                        path: path.route,
+                                        methods: {
+                                            get: [handlers.respond(message)[handlerType]]
+                                        }
+                                    }]
+                                }
+                            ]
+                        };
+                    before(function () {
+                        app = expressComposer();
+                        should.exist(app);
+                    });
+
+                    it(util.format("should compose a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
+                        app.compose(score);
+                    });
+
+                    it(util.format("should return the message %s", message), function (done) {
+                        var request = supertest(app);
+                        request
+                            .get([path.router, path.route].join('') || '/')
+                            .expect(200)
+                            .end(function (err, res) {
+                                if (err) {
+                                    return done(err);
+                                }
+                                try {
+                                    res.text.should.equal(message);
+                                    done();
+                                } catch (e) {
+                                    done(e);
+                                }
+
+                            });
+                    });
+
+                });
+
                 describe(util.format("test router error for handlerType:%s routerPath:%s routePath:%s",
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
                     var app,
