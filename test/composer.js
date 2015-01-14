@@ -16,21 +16,21 @@
               app = expressComposer();
            });
 
-            it("app should contain a compose method", function(){
-                should(app.compose).be.a.Function;
+            it("app should contain a conduct method", function(){
+                should(app.conduct).be.a.Function;
             });
 
-            it("Router should contain a compose method", function(){
+            it("Router should contain a conduct method", function(){
                var router = new expressComposer.Router();
                 should.exist(router);
-                should(router.compose).be.a.Function;
+                should(router.conduct).be.a.Function;
             });
 
-            it("Route should contain a compose method", function(){
+            it("Route should contain a conduct method", function(){
                 var router = new expressComposer.Router(),
                     route = router.route('/');
                 should.exist(route);
-                should(route.compose).be.a.Function;
+                should(route.conduct).be.a.Function;
             });
 
             it("expressComposer should contain a Scope class", function(){

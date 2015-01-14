@@ -38,8 +38,8 @@
                         app = expressComposer();
                         should.exist(app);
                     });
-                    it(util.format("should compose a route with a base path of '%s'", [path.router, path.route].join('') || '/'), function () {
-                        app.compose(score);
+                    it(util.format("should conduct a route with a base path of '%s'", [path.router, path.route].join('') || '/'), function () {
+                        app.conduct(score);
                     });
 
                     it("should respond with " + message, function (done) {
@@ -84,7 +84,7 @@
                     });
 
                     it("should create handler and set a scope message", function () {
-                        app.compose(score);
+                        app.conduct(score);
                     });
 
                     it("should respond with scope variable message: " + message, function (done) {
@@ -133,8 +133,8 @@
                         should.exist(app);
                     });
 
-                    it(util.format("should compose a route with a base path of '%s'", [path.router, path.route].join('') || '/'), function () {
-                        app.compose(score);
+                    it(util.format("should conduct a route with a base path of '%s'", [path.router, path.route].join('') || '/'), function () {
+                        app.conduct(score);
                     });
 
                     it("should respond with error when validation schema does not match", function (done) {
@@ -192,8 +192,8 @@
                         should.exist(app);
                     });
 
-                    it(util.format("should compose a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
-                        app.compose(score);
+                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
+                        app.conduct(score);
                     });
 
                     it("should return the error thrown", function (done) {
@@ -242,8 +242,8 @@
                         should.exist(app);
                     });
 
-                    it(util.format("should compose a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
-                        app.compose(score);
+                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
+                        app.conduct(score);
                     });
 
                     it("should return the error thrown", function (done) {
@@ -289,8 +289,8 @@
                         should.exist(app);
                     });
 
-                    it(util.format("should compose a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
-                        app.compose(score);
+                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
+                        app.conduct(score);
                     });
 
                     it(util.format("should return the message %s", message), function (done) {
@@ -337,8 +337,8 @@
                         should.exist(app);
                     });
 
-                    it(util.format("should compose a route with a base path of '%s' that throws an error ", [path.router, path.route].join('') || '/', message), function () {
-                        app.compose(score);
+                    it(util.format("should conduct a route with a base path of '%s' that throws an error ", [path.router, path.route].join('') || '/', message), function () {
+                        app.conduct(score);
                     });
 
                     it("should return the error thrown", function (done) {
@@ -385,8 +385,8 @@
                         should.exist(app);
                     });
 
-                    it(util.format("should compose a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
-                        app.compose(score);
+                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
+                        app.conduct(score);
                     });
 
                     it("should return the error thrown", function (done) {
@@ -433,8 +433,8 @@
                         should.exist(app);
                     });
 
-                    it(util.format("should compose a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
-                        app.compose(score);
+                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
+                        app.conduct(score);
                     });
 
                     it("should return the error thrown", function (done) {
@@ -482,8 +482,8 @@
                         should.exist(app);
                     });
 
-                    it(util.format("should compose a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
-                        app.compose(score);
+                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
+                        app.conduct(score);
                     });
 
                     it("should return the error thrown", function (done) {
@@ -534,8 +534,8 @@
                         should.exist(app);
                     });
 
-                    it(util.format("should compose a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
-                        app.compose(score);
+                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
+                        app.conduct(score);
                     });
 
                     it("should return the error thrown", function (done) {
