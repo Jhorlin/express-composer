@@ -24,14 +24,14 @@
   },
   "homepage": "https://github.com/Jhorlin/express-composer",
   "devDependencies": {
+    "express": "^4.11.0",
     "istanbul": "^0.3.5",
     "mocha": "^2.1.0",
     "should": "^4.4.2"
   },
   "dependencies": {
-    "express": "^4.10.4",
     "extend": "^2.0.0",
-    "joi": "^5.0.2",
+    "joi": "^5.1.0",
     "q": "^1.1.2",
     "supertest": "^0.15.0",
     "utils-merge": "^1.0.0"

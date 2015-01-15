@@ -200,7 +200,7 @@
                         var request = supertest(app);
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .expect(500)
+                            .expect(501)
                             .end(function (err, res) {
                                 if (err) {
                                     return done(err);
@@ -250,7 +250,7 @@
                         var request = supertest(app);
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .expect(500)
+                            .expect(501)
                             .end(function (err, res) {
                                 if (err) {
                                     return done(err);
@@ -345,7 +345,7 @@
                         var request = supertest(app);
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .expect(500)
+                            .expect(501)
                             .end(function (err, res) {
                                 if (err) {
                                     return done(err);

@@ -48,7 +48,7 @@
                 setTimeout(function () {
                     handler.call(this, err, req, res);
                     next();
-                }.bind(this), delay || 0)
+                }.bind(this), delay || 0);
             }
         };
     }
@@ -132,7 +132,7 @@
         },
         error: function () {
             var handler = function (err, req, res) {
-                res.status(500).send(err.message);
+                res.status(501).send(err.message);
             };
             return createErrorHandlerTypes(handler);
         }

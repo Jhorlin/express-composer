@@ -272,4 +272,4 @@
         });
     });
 
-}(require('./../lib/scope'), require('should'), require('q')));
+}(require('../index').Scope, require('should'), require('q')));
