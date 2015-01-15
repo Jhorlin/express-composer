@@ -362,6 +362,54 @@
 
                 });
 
+                describe(util.format("test app error for handlerType:%s routerPath:%s routePath:%s",
+                    handlerType, path.router || 'Default', path.route || 'Default'), function () {
+                    var app,
+                        message = "oops",
+                        score = {
+                            errorHandlers: [handlers.error()[handlerType]],
+                            routers: [{
+                                path: path.router,
+                                routes: [{
+                                    path: path.route,
+                                    methods: {
+                                        get: {
+                                            handlers: [handlers.throwError(message)[handlerType]]
+                                        }
+                                    }
+                                }]
+                            }]
+                        };
+                    before(function () {
+                        app = expressComposer();
+                        should.exist(app);
+                    });
+
+                    it(util.format("should conduct a route with a base path of '%s' that throws an error ", [path.router, path.route].join('') || '/', message), function () {
+                        app.conduct(score);
+                    });
+
+                    it("should return the error thrown", function (done) {
+                        var request = supertest(app);
+                        request
+                            .get([path.router, path.route].join('') || '/')
+                            .expect(501)
+                            .end(function (err, res) {
+                                if (err) {
+                                    return done(err);
+                                }
+                                try {
+                                    res.text.should.equal(message);
+                                    done();
+                                } catch (e) {
+                                    done(e);
+                                }
+
+                            });
+                    });
+
+                });
+
                 describe(util.format("test method preHandler for handlerType:%s routerPath:%s routePath:%s",
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
                     var app,
@@ -474,6 +522,55 @@
                                         }
                                     }],
                                     preHandlers: [handlers.setScope("message", message)[handlerType]]
+                                }
+                            ]
+                        };
+                    before(function () {
+                        app = expressComposer();
+                        should.exist(app);
+                    });
+
+                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
+                        app.conduct(score);
+                    });
+
+                    it("should return the error thrown", function (done) {
+                        var request = supertest(app);
+                        request
+                            .get([path.router, path.route].join('') || '/')
+                            .expect(200)
+                            .end(function (err, res) {
+                                if (err) {
+                                    return done(err);
+                                }
+                                try {
+                                    res.text.should.equal(message);
+                                    done();
+                                } catch (e) {
+                                    done(e);
+                                }
+
+                            });
+                    });
+                });
+
+                describe(util.format("test app preHandler for handlerType:%s routerPath:%s routePath:%s",
+                    handlerType, path.router || 'Default', path.route || 'Default'), function () {
+                    var app,
+                        message = "hello world",
+                        score = {
+                            preHandlers: [handlers.setScope("message", message)[handlerType]],
+                            routers: [
+                                {
+                                    path: path.router,
+                                    routes: [{
+                                        path: path.route,
+                                        methods: {
+                                            get: {
+                                                handlers: [handlers.respondScope("message")[handlerType]]
+                                            }
+                                        }
+                                    }]
                                 }
                             ]
                         };

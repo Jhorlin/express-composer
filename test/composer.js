@@ -151,6 +151,70 @@
                     });
             });
 
+            it("should create a score and compose an app with a method preHandler and a route get message of 'Hello World!'", function(done){
+                var scoreConfig = {
+                    routers: [{
+                        routes: [{
+
+                            methods: {
+                                get: {
+                                    preHandlers:['setScopeMessage'],
+                                    handlers: ['getScopeMessage']
+                                }
+                            }
+                        }]
+                    }]
+                };
+                var score = scoreFactory.composeAppSync(scoreConfig);
+                app.conduct(score);
+                request
+                    .get('/')
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) {
+                            return done(err);
+                        }
+                        try {
+                            res.text.should.eql('Hello World!');
+                            done();
+                        } catch (e) {
+                            done(e);
+                        }
+                    });
+            });
+
+            it("should create a score and compose an app with a app preHandler and a route get message of 'Hello World!'", function(done){
+                var scoreConfig = {
+                    preHandlers:['setScopeMessage'],
+                    routers: [{
+                        routes: [{
+
+                            methods: {
+                                get: {
+                                    handlers: ['getScopeMessage']
+                                }
+                            }
+                        }]
+                    }]
+                };
+                var score = scoreFactory.composeAppSync(scoreConfig);
+                app.conduct(score);
+                request
+                    .get('/')
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) {
+                            return done(err);
+                        }
+                        try {
+                            res.text.should.eql('Hello World!');
+                            done();
+                        } catch (e) {
+                            done(e);
+                        }
+                    });
+            });
+
             it("should create a score and compose an app with the message 'Hello World!' with a validation schema for 'key'", function (done) {
                 var scoreConfig = {
                     routers: [{
@@ -281,6 +345,38 @@
                             methods: {
                                 get: {
                                     errorHandlers:['sendError'],
+                                    handlers: ['throwError']
+                                }
+                            }
+                        }]
+                    }]
+                };
+                var score = scoreFactory.composeAppSync(scoreConfig);
+                app.conduct(score);
+                request
+                    .get('/')
+                    .expect(501)
+                    .end(function (err, res) {
+                        if (err) {
+                            return done(err);
+                        }
+                        try {
+                            res.text.should.equal('oops...');
+                            done();
+                        } catch (e) {
+                            done(e);
+                        }
+                    });
+            });
+
+            it("should create a score and compose an app with a app error handler", function(done){
+                var scoreConfig = {
+                    errorHandlers:['sendError'],
+                    routers: [{
+                        routes: [{
+                            methods: {
+                                get: {
+
                                     handlers: ['throwError']
                                 }
                             }
