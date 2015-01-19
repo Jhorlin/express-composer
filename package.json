@@ -1,6 +1,6 @@
 {
   "name": "express-composer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A composition library to help organize your express routes and handlers",
   "main": "index.js",
   "scripts": {
@@ -28,6 +28,9 @@
     "istanbul": "^0.3.5",
     "mocha": "^2.1.0",
     "should": "^4.4.2"
+  },
+  "peerDependencies": {
+    "express": ">3.0.0"
   },
   "dependencies": {
     "extend": "^2.0.0",
