@@ -4,7 +4,7 @@
 (function(module, require){
     "use strict";
     var chai = require('chai'),
-        plugins = ['chai-as-promised'];
+        plugins = ['chai-as-promised', 'chai-http'];
     plugins.forEach(function(plugin){
         chai.use(require(plugin));
     });
