@@ -13,9 +13,7 @@
   },
   "keywords": [
     "express",
-    "handlers",
-    "composition",
-    "organize"
+    "compose"
   ],
   "author": "Jhorlin De Armas",
   "license": "ISC",
