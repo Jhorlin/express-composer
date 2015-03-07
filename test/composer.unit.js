@@ -35,7 +35,7 @@
                 request;
             before(function () {
                 scoreFactory = expressComposer.composer.defaultFactory();
-                scoreFactory.initialize('../test/modules/handlers', '../test/modules/schemas', '../test/modules/scopes');
+                scoreFactory.initialize('test/modules/handlers', 'test/modules/schemas', 'test/modules/scopes');
             });
 
             beforeEach(function () {
