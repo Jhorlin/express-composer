@@ -29,8 +29,10 @@
     "gulp": "^3.8.11",
     "gulp-coverage": "^0.3.34",
     "gulp-mocha": "^2.0.0",
+    "gulp-watch": "^4.1.1",
     "istanbul": "^0.3.5",
-    "mocha": "^2.1.0",
+    "mocha": "^2.2.0",
+    "run-sequence": "^1.0.2",
     "should": "^4.4.2",
     "through": "^2.3.6",
     "through2": "^0.6.3"

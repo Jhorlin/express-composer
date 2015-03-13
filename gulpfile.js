@@ -5,12 +5,13 @@
     "use strict";
     var gulp = require('gulp'),
         mocha = require('gulp-mocha'),
-        through = require('through')(function(data){
-            this.queue(data);
-        }, function(){
-            this.emit('end');
+        through = require('through2'),
+        passThrough = through.obj(function(file, enc, cb){
+            cb(null, file);
         }),
-        cover = require('gulp-coverage');
+        runSequence = require('run-sequence').use(gulp),
+        cover = require('gulp-coverage'),
+        watch = require('gulp-watch');
 
     function srcUnit() {
         return gulp.src('test/**/*.unit.js', {read: false});
@@ -21,20 +22,17 @@
     }
 
     function testUnit(inst) {
-        var instrument = inst || through;
+        var instrument = inst || passThrough;
         return srcUnit()
             .pipe(instrument)
             .pipe(mocha());
     }
 
     function testE2E(inst) {
-        var instrument = inst || through;
+        var instrument = inst || passThrough;
         return srcE2E()
             .pipe(instrument)
-            .pipe(mocha())
-            .pipe(cover.gather())
-            .pipe(cover.format())
-            .pipe(gulp.dest('reports'));
+            .pipe(mocha());
     }
 
     function coverUnit() {
@@ -49,24 +47,44 @@
     function coverE2E() {
         return testE2E(cover.instrument({
             pattern: ['lib/**/*.js']
-        }));
+        }))
+            .pipe(cover.gather())
+            .pipe(cover.format())
+            .pipe(gulp.dest('reports'));
     }
 
-    gulp.task('test:unit', function(){
+    gulp.task('test:unit', function () {
         return testUnit();
     });
 
-    gulp.task('test:e2e', function(){
+    gulp.task('test:e2e', function () {
         return testE2E();
     });
 
-    gulp.task('cover:unit', function(){
+    gulp.task('cover:unit', function () {
         return coverUnit();
     });
 
-    gulp.task('cover:e2e', function(){
+    gulp.task('cover:e2e', function () {
         return coverE2E();
     });
+
+    gulp.task('watch:unit', function () {
+        return srcUnit()
+            .pipe(watch('test/**/*.unit.js'))
+            .pipe(through(function (data) {
+                this.queue(testUnit());
+            }, function () {
+                this.emit('end');
+            }))
+            ;
+    });
+
+    gulp.task('watch:e2e', function () {
+        this.watch('test/**/*.e2e.js',['test:e2e']);
+    });
+
+    gulp.task('watch', ['watch:unit', 'watch:e2e']);
 
     gulp.task('test', ['test:unit', 'test:e2e']);
 

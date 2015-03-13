@@ -1,8 +1,16 @@
 /**
  * Created by jhorlin.dearmas on 1/1/2015.
  */
-(function (expressComposer, should, supertest, handlers, joi, util) {
+(function (require) {
     "use strict";
+    var expressComposer = require('../index'),
+        should = require('should'),
+        supertest = require('supertest'),
+        handlers = require('./utils/handlers'),
+        joi = require('joi'),
+        util = require('util'),
+        chai = require('./utils/chai'),
+        expect = chai.expect;
 
     describe("Test express composer composition and routes", function () {
         var handlerTypes = ['standard', 'promise', 'callback'],
@@ -19,6 +27,7 @@
                 describe(util.format("test that we can create a simple hello world route with handlerType:%s routerPath:%s routePath:%s",
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
                     var app,
+                        request,
                         message = "hello world",
                         score = {
                             routers: [{
@@ -34,29 +43,21 @@
                             }]
                         };
 
-                    before(function () {
+                    beforeEach(function () {
                         app = expressComposer();
-                        should.exist(app);
+                        request = chai.request(app);
                     });
                     it(util.format("should conduct a route with a base path of '%s'", [path.router, path.route].join('') || '/'), function () {
                         app.conduct(score);
                     });
 
-                    it("should respond with " + message, function (done) {
-                        var request = supertest(app);
-                        request
+                    it("should respond with " + message, function () {
+                        return request
                             .get([path.router, path.route].join('') || '/')
                             .expect(200)
-                            .end(function (err, res) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                try {
-                                    res.text.should.eql(message);
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
+                            .then(function (res) {
+                                expect(res).to.have.status(200);
+                                expect(res.text).to.equal(message);
                             });
                     });
                 });
@@ -64,6 +65,7 @@
                 describe(util.format("test route has access to scope with handlerType:%s routerPath:%s routePath:%s",
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
                     var app,
+                        request,
                         message = "hello world",
                         score = {
                             routers: [{
@@ -78,30 +80,19 @@
                                 }]
                             }]
                         };
-                    before(function () {
+                    beforeEach(function () {
                         app = expressComposer();
-                        should.exist(app);
-                    });
-
-                    it("should create handler and set a scope message", function () {
                         app.conduct(score);
+                        request = chai.request(app);
                     });
 
-                    it("should respond with scope variable message: " + message, function (done) {
-                        var request = supertest(app);
-                        request
+                    it("should respond with scope variable message: " + message, function () {
+                        return request
                             .get([path.router, path.route].join('') || '/')
                             .expect(200)
                             .end(function (err, res) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                try {
-                                    res.text.should.eql(message);
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
+                                expect(res).to.have.status(200);
+                                expect(res.text).to.equal(message);
                             });
                     });
 
@@ -110,6 +101,7 @@
                 describe(util.format("test route validator for handlerType:%s routerPath:%s routePath:%s",
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
                     var app,
+                        request,
                         message = "hello world",
                         validator = joi.object({
                             key: joi.any().required()
@@ -130,41 +122,24 @@
                         };
                     before(function () {
                         app = expressComposer();
-                        should.exist(app);
-                    });
-
-                    it(util.format("should conduct a route with a base path of '%s'", [path.router, path.route].join('') || '/'), function () {
                         app.conduct(score);
+                        request = chai.request(app);
                     });
 
-                    it("should respond with error when validation schema does not match", function (done) {
-                        var request = supertest(app);
-                        request
+                    it("should respond with error when validation schema does not match", function () {
+                        return request
                             .get(([path.router, path.route].join('') || '/') + '?noMatch=test')
-                            .expect(400)
-                            .end(function (err, res) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                done();
+                            .then(function (res) {
+                               expect(res).to.have.status(400);
                             });
                     });
 
                     it("should respond with " + message, function (done) {
-                        var request = supertest(app);
-                        request
+                        return request
                             .get(([path.router, path.route].join('') || '/') + '?key=test')
-                            .expect(200)
-                            .end(function (err, res) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                try {
-                                    res.text.should.eql(message);
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
+                            .then(function (res) {
+                                expect(res).to.have.status(200);
+                                expect(res.message).to.equal(message);
                             });
                     });
                 });
@@ -173,6 +148,7 @@
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
                     var app,
                         message = "oops",
+                        request,
                         score = {
                             routers: [{
                                 path: path.router,
@@ -189,29 +165,15 @@
                         };
                     before(function () {
                         app = expressComposer();
-                        should.exist(app);
-                    });
-
-                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
                         app.conduct(score);
+                        request = chai.request(app);
                     });
 
                     it("should return the error thrown", function (done) {
-                        var request = supertest(app);
-                        request
+                        return request
                             .get([path.router, path.route].join('') || '/')
-                            .expect(501)
-                            .end(function (err, res) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                try {
-                                    res.text.should.equal(message);
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-
+                            .then(function (err, res) {
+                                expect(res).to.have.status(501);
                             });
                     });
 
@@ -616,6 +578,7 @@
                                     },
                                     routes: [{
                                         path: path.route,
+
                                         methods: {
                                             get: {
                                                 handlers: [handlers.respondScope("message")[handlerType]]
@@ -657,4 +620,4 @@
             });
         });
     });
-}(require('../index'), require('should'), require('supertest'), require('./utils/handlers'), require('joi'), require('util')))
+}(require))

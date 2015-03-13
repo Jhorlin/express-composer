@@ -1,12 +1,15 @@
 /**
  * Created by jhorlin.dearmas on 3/7/2015.
  */
-(function(module, require){
+(function (context, module, require) {
     "use strict";
     var chai = require('chai'),
         plugins = ['chai-as-promised', 'chai-http'];
-    plugins.forEach(function(plugin){
+    plugins.forEach(function (plugin) {
         chai.use(require(plugin));
+        if (plugin === 'chai-http') {
+            chai.request.addPromises(require('q').Promise);
+        }
     });
     module.exports = chai;
-}(module, require))
+}(this, module, require))
