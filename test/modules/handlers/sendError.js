@@ -6,7 +6,7 @@
  */
 (function(module){
     "use strict";
-    module.exports = function(err, req, res){
+    module.exports = function sendError(err, req, res){
         res.status(501).send(err.message);
     };
 }(module))

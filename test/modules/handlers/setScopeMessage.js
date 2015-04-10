@@ -3,7 +3,7 @@
  */
 (function(module){
     "use strict";
-    module.exports = function(req, res){
+    module.exports = function setScopeMessage(req, res){
         this.message = "Hello World!";
     };
 }(module))

@@ -6,7 +6,7 @@
  */
 (function(module){
     "use strict";
-    module.exports = function(req, res){
+    module.exports = function throwError(req, res){
         throw new Error("oops...");
     };
 }(module))

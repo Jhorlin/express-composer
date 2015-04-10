@@ -1,7 +1,10 @@
 /**
  * Created by jhorlin.dearmas on 12/30/2014.
  */
-(function (Scope, should, q) {
+(function (Scope, should) {
+    'use strict';
+
+    var Promise = require('bluebird');
     describe("test scope", function () {
         describe("test parent scope", function () {
             it("should create an instance of a scope", function () {
@@ -31,12 +34,12 @@
                     },
                     {
                         type: "promise",
-                        value: q.when(argument)
+                        value: Promise.resolve(argument)
                     },
                     {
                         type: "function returning a promise",
                         value: function () {
-                            return q.when(argument);
+                            return Promise.resolve(argument);
                         }
                     }
                 ];
@@ -161,16 +164,16 @@
                     },
                     {
                         type: "promise",
-                        value: q.when(argument),
-                        set: q.when(setArgument)
+                        value: Promise.resolve(argument),
+                        set: Promise.resolve(setArgument)
                     },
                     {
                         type: "function returning a promise",
                         value: function () {
-                            return q.when(argument);
+                            return Promise.resolve(argument);
                         },
                         set:function(){
-                            return q.when(setArgument);
+                            return Promise.resolve(setArgument);
                         }
                     }
                 ];
@@ -272,4 +275,4 @@
         });
     });
 
-}(require('../index').Scope, require('should'), require('q')));
+}(require('../index').Scope, require('should')));

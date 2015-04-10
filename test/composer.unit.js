@@ -9,7 +9,7 @@
                 scoreFactory = expressComposer.composer.defaultFactory();
             });
 
-            it("should create an instance of default composer", function () {
+            it.skip("should create an instance of default composer", function () {
                 should.exist(scoreFactory);
             });
 
@@ -21,7 +21,7 @@
                 scoreFactory = expressComposer.composer.defaultFactory();
             });
 
-            it("should create an instance of default composer", function (done) {
+            it.skip("should create an instance of default composer", function (done) {
                 scoreFactory.ready(function () {
                     done();
                 }, done);
@@ -43,7 +43,7 @@
                 request = supertest(app);
             });
 
-            it("should create a score", function () {
+            it.skip("should create a score", function () {
                 var scoreConfig = {
                     routers: [{
                         routes: [{
@@ -59,7 +59,7 @@
                 should.exist(score);
             });
 
-            it("should create a score and compose an app with the message 'Hello World!'", function (done) {
+            it.skip("should create a score and compose an app with the message 'Hello World!'", function (done) {
                 var scoreConfig = {
                     routers: [{
                         routes: [{
@@ -89,7 +89,7 @@
                     });
             });
 
-            it("should create a score and compose an app with a router preHandler and a route get message of 'Hello World!'", function(done){
+            it.skip("should create a score and compose an app with a router preHandler and a route get message of 'Hello World!'", function(done){
                 var scoreConfig = {
                     routers: [{
                         preHandlers:['setScopeMessage'],
@@ -120,7 +120,7 @@
                     });
             });
 
-            it("should create a score and compose an app with a route preHandler and a route get message of 'Hello World!'", function(done){
+            it.skip("should create a score and compose an app with a route preHandler and a route get message of 'Hello World!'", function(done){
                 var scoreConfig = {
                     routers: [{
                         routes: [{
@@ -151,7 +151,7 @@
                     });
             });
 
-            it("should create a score and compose an app with a method preHandler and a route get message of 'Hello World!'", function(done){
+            it.skip("should create a score and compose an app with a method preHandler and a route get message of 'Hello World!'", function(done){
                 var scoreConfig = {
                     routers: [{
                         routes: [{
@@ -183,7 +183,7 @@
                     });
             });
 
-            it("should create a score and compose an app with a app preHandler and a route get message of 'Hello World!'", function(done){
+            it.skip("should create a score and compose an app with a app preHandler and a route get message of 'Hello World!'", function(done){
                 var scoreConfig = {
                     preHandlers:['setScopeMessage'],
                     routers: [{
@@ -215,7 +215,7 @@
                     });
             });
 
-            it("should create a score and compose an app with the message 'Hello World!' with a validation schema for 'key'", function (done) {
+            it.skip("should create a score and compose an app with the message 'Hello World!' with a validation schema for 'key'", function (done) {
                 var scoreConfig = {
                     routers: [{
                         routes: [{
@@ -246,7 +246,7 @@
                     });
             });
 
-            it("should create a score and compose an app with a validation schema for 'key'", function (done) {
+            it.skip("should create a score and compose an app with a validation schema for 'key'", function (done) {
                 var scoreConfig = {
                     routers: [{
                         routes: [{
@@ -307,7 +307,7 @@
                     });
             });
 
-            it("should create a score and compose an app with a route error handler", function(done){
+            it.skip("should create a score and compose an app with a route error handler", function(done){
                 var scoreConfig = {
                     routers: [{
                         routes: [{
@@ -338,7 +338,7 @@
                     });
             });
 
-            it("should create a score and compose an app with a method error handler", function(done){
+            it.skip("should create a score and compose an app with a method error handler", function(done){
                 var scoreConfig = {
                     routers: [{
                         routes: [{
@@ -369,7 +369,7 @@
                     });
             });
 
-            it("should create a score and compose an app with a app error handler", function(done){
+            it.skip("should create a score and compose an app with a app error handler", function(done){
                 var scoreConfig = {
                     errorHandlers:['sendError'],
                     routers: [{

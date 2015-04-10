@@ -1,23 +1,25 @@
 /**
  * Created by jhorlin.dearmas on 12/29/2014.
  */
-(function (module, q) {
+(function (module) {
     "use strict";
+    var Promise = require('bluebird');
 
     function createHandlerTypes(handler, delay) {
         return {
             standard: handler,
             promise: function (req, res) {
-                var deferred = q.defer();
-                setTimeout(function () {
-                    try{
-                        deferred.resolve(handler.call(this, req, res));
-                    } catch(err){
-                        deferred.reject(err);
-                    }
+                var self = this;
+                return new Promise(function (resolve, reject) {
+                    setTimeout(function () {
+                        try {
+                            resolve(handler.call(self, req, res));
+                        } catch (err) {
+                            reject(err);
+                        }
 
-                }.bind(this), delay || 0);
-                return deferred.promise;
+                    }, delay || 0);
+                });
             },
             callback: function (req, res, next) {
                 setTimeout(function () {
@@ -38,11 +40,11 @@
         return {
             standard: handler,
             promise: function (err, req, res) {
-                var deferred = q.defer();
-                setTimeout(function () {
-                    deferred.resolve(handler.call(this, err, req, res))
-                }.bind(this), delay || 0);
-                return deferred.promise;
+                return new Promise(function (resolve, reject) {
+                    setTimeout(function () {
+                        resolve(handler.call(this, err, req, res));
+                    }.bind(this), delay || 0);
+                });
             },
             callback: function (err, req, res, next) {
                 setTimeout(function () {
@@ -63,7 +65,7 @@
         setScope: function (property, value) {
             var handler = function (req, res) {
                 var self = this;
-                q.when(typeof value === 'function' ? value() : value).then(function () {
+                Promise.resolve(typeof value === 'function' ? value() : value).then(function () {
                     var properties = property.split('.'),
                         lastIndex = properties.length - 1,
                         object = self;
@@ -137,4 +139,4 @@
             return createErrorHandlerTypes(handler);
         }
     };
-}(module, require('q')))
+}(module))

@@ -41,9 +41,9 @@
     "express": ">3.0.0"
   },
   "dependencies": {
+    "bluebird": "^2.9.24",
     "extend": "^2.0.0",
     "joi": "^5.1.0",
-    "q": "^1.1.2",
     "supertest": "^0.15.0",
     "utils-merge": "^1.0.0"
   }
