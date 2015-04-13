@@ -1,8 +1,14 @@
 /**
-* Created by jhorlin.dearmas on 1/14/2015.
+ * Created by jhorlin.dearmas on 1/14/2015.
  */
-(function (expressComposer, should, supertest) {
-    describe("test composer", function () {
+(function (require, describe, before, it) {
+    'use strict';
+
+    var expressComposer = require('../index'),
+        chai = require('./utils/chai'),
+        httpRequest = chai.request,
+        expect = chai.expect;
+    describe.only("test composer", function () {
         describe("test instantiation of default factory", function () {
             var scoreFactory;
             before(function () {
@@ -10,7 +16,7 @@
             });
 
             it("should create an instance of default composer", function () {
-                should.exist(scoreFactory);
+                expect(scoreFactory).to.be.ok;
             });
 
         });
@@ -21,11 +27,9 @@
                 scoreFactory = expressComposer.composer.defaultFactory();
             });
 
-            it("should create an instance of default composer", function (done) {
-                scoreFactory.ready(function () {
-                    done();
-                }, done);
-                scoreFactory.initialize('/', '/', '/');
+            it("should initialize an instance of default composer", function () {
+                scoreFactory.initialize();
+                return scoreFactory.ready;
             });
         });
 
@@ -35,12 +39,12 @@
                 request;
             before(function () {
                 scoreFactory = expressComposer.composer.defaultFactory();
-                scoreFactory.initialize('test/modules/handlers', 'test/modules/schemas', 'test/modules/scopes');
+                scoreFactory.initialize();
             });
 
             beforeEach(function () {
                 app = expressComposer();
-                request = supertest(app);
+                request = httpRequest(app);
             });
 
             it("should create a score", function () {
@@ -49,23 +53,23 @@
                         routes: [{
                             methods: {
                                 get: {
-                                    handlers: ['getScopeMessage']
+                                    handlers: ['test/modules/handlers/getScopeMessage']
                                 }
                             }
                         }]
                     }]
                 };
                 var score = scoreFactory.composeAppSync(scoreConfig);
-                should.exist(score);
+                expect(score).to.be.ok;
             });
 
-            it("should create a score and compose an app with the message 'Hello World!'", function (done) {
+            it("should create a score and compose an app with the message 'Hello World!'", function () {
                 var scoreConfig = {
                     routers: [{
                         routes: [{
                             methods: {
                                 get: {
-                                    handlers: ['helloWorld']
+                                    handlers: ['test/modules/handlers/helloWorld']
                                 }
                             }
                         }]
@@ -73,30 +77,22 @@
                 };
                 var score = scoreFactory.composeAppSync(scoreConfig);
                 app.conduct(score);
-                request
+                return request
                     .get('/')
-                    .expect(200)
-                    .end(function (err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        try {
-                            res.text.should.eql('Hello World!');
-                            done();
-                        } catch (e) {
-                            done(e);
-                        }
+                    .then(function (res) {
+                        expect(res).to.have.status(200);
+                        expect(res.text).to.equal('Hello World!');
                     });
             });
 
-            it("should create a score and compose an app with a router preHandler and a route get message of 'Hello World!'", function(done){
+            it("should create a score and compose an app with a router preHandler and a route get message of 'Hello World!'", function () {
                 var scoreConfig = {
                     routers: [{
-                        preHandlers:['setScopeMessage'],
+                        preHandlers: ['test/modules/handlers/setScopeMessage'],
                         routes: [{
                             methods: {
                                 get: {
-                                    handlers: ['getScopeMessage']
+                                    handlers: ['test/modules/handlers/getScopeMessage']
                                 }
                             }
                         }]
@@ -104,30 +100,22 @@
                 };
                 var score = scoreFactory.composeAppSync(scoreConfig);
                 app.conduct(score);
-                request
+                return request
                     .get('/')
-                    .expect(200)
-                    .end(function (err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        try {
-                            res.text.should.eql('Hello World!');
-                            done();
-                        } catch (e) {
-                            done(e);
-                        }
+                    .then(function (res) {
+                        expect(res).to.have.status(200);
+                        expect(res.text).to.equal('Hello World!');
                     });
             });
 
-            it("should create a score and compose an app with a route preHandler and a route get message of 'Hello World!'", function(done){
+            it("should create a score and compose an app with a route preHandler and a route get message of 'Hello World!'", function () {
                 var scoreConfig = {
                     routers: [{
                         routes: [{
-                            preHandlers:['setScopeMessage'],
+                            preHandlers: ['test/modules/handlers/setScopeMessage'],
                             methods: {
                                 get: {
-                                    handlers: ['getScopeMessage']
+                                    handlers: ['test/modules/handlers/getScopeMessage']
                                 }
                             }
                         }]
@@ -135,31 +123,23 @@
                 };
                 var score = scoreFactory.composeAppSync(scoreConfig);
                 app.conduct(score);
-                request
+                return request
                     .get('/')
-                    .expect(200)
-                    .end(function (err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        try {
-                            res.text.should.eql('Hello World!');
-                            done();
-                        } catch (e) {
-                            done(e);
-                        }
+                    .end(function (res) {
+                        expect(res).to.have.status(200);
+                        expect(res.text).to.equal('Hello World!');
                     });
             });
 
-            it("should create a score and compose an app with a method preHandler and a route get message of 'Hello World!'", function(done){
+            it("should create a score and compose an app with a method preHandler and a route get message of 'Hello World!'", function () {
                 var scoreConfig = {
                     routers: [{
                         routes: [{
 
                             methods: {
                                 get: {
-                                    preHandlers:['setScopeMessage'],
-                                    handlers: ['getScopeMessage']
+                                    preHandlers: ['test/modules/handlers/setScopeMessage'],
+                                    handlers: ['test/modules/handlers/getScopeMessage']
                                 }
                             }
                         }]
@@ -167,31 +147,23 @@
                 };
                 var score = scoreFactory.composeAppSync(scoreConfig);
                 app.conduct(score);
-                request
+                return request
                     .get('/')
-                    .expect(200)
-                    .end(function (err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        try {
-                            res.text.should.eql('Hello World!');
-                            done();
-                        } catch (e) {
-                            done(e);
-                        }
+                    .then(function (res) {
+                        expect(res).to.have.status(200);
+                        expect(res.text).to.equal('Hello World!');
                     });
             });
 
-            it("should create a score and compose an app with a app preHandler and a route get message of 'Hello World!'", function(done){
+            it("should create a score and compose an app with a app preHandler and a route get message of 'Hello World!'", function () {
                 var scoreConfig = {
-                    preHandlers:['setScopeMessage'],
+                    preHandlers: ['test/modules/handlers/setScopeMessage'],
                     routers: [{
                         routes: [{
 
                             methods: {
                                 get: {
-                                    handlers: ['getScopeMessage']
+                                    handlers: ['test/modules/handlers/getScopeMessage']
                                 }
                             }
                         }]
@@ -199,30 +171,22 @@
                 };
                 var score = scoreFactory.composeAppSync(scoreConfig);
                 app.conduct(score);
-                request
+                return request
                     .get('/')
-                    .expect(200)
-                    .end(function (err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        try {
-                            res.text.should.eql('Hello World!');
-                            done();
-                        } catch (e) {
-                            done(e);
-                        }
+                    .then(function (res) {
+                        expect(res).to.have.status(200);
+                        expect(res.text).to.equal('Hello World!');
                     });
             });
 
-            it("should create a score and compose an app with the message 'Hello World!' with a validation schema for 'key'", function (done) {
+            it("should create a score and compose an app with the message 'Hello World!' with a validation schema for 'key'", function () {
                 var scoreConfig = {
                     routers: [{
                         routes: [{
                             methods: {
                                 get: {
-                                    validator:'keyParam',
-                                    handlers: ['helloWorld']
+                                    validator: 'test/validators/user',
+                                    handlers: ['test/modules/handlers/helloWorld']
                                 }
                             }
                         }]
@@ -230,30 +194,22 @@
                 };
                 var score = scoreFactory.composeAppSync(scoreConfig);
                 app.conduct(score);
-                request
+                return request
                     .get('/?key=123')
-                    .expect(200)
-                    .end(function (err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        try {
-                            res.text.should.eql('Hello World!');
-                            done();
-                        } catch (e) {
-                            done(e);
-                        }
+                    .then(function (res) {
+                        expect(res).to.have.status(200);
+                        expect(res.text).to.equal('Hello World!');
                     });
             });
 
-            it("should create a score and compose an app with a validation schema for 'key'", function (done) {
+            it("should create a score and compose an app with a validation schema for 'key'", function () {
                 var scoreConfig = {
                     routers: [{
                         routes: [{
                             methods: {
                                 get: {
-                                    validator:'keyParam',
-                                    handlers: ['helloWorld']
+                                    validator: 'test/validators/user',
+                                    handlers: ['test/modules/handlers/helloWorld']
                                 }
                             }
                         }]
@@ -261,29 +217,21 @@
                 };
                 var score = scoreFactory.composeAppSync(scoreConfig);
                 app.conduct(score);
-                request
+                return request
                     .get('/')
-                    .expect(400)
-                    .end(function (err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        try {
-                            done();
-                        } catch (e) {
-                            done(e);
-                        }
+                    .then(function (res) {
+                        expect(res).to.have.status(400);
                     });
             });
 
-            it("should create a score and compose an app with a router error handler", function(done){
+            it("should create a score and compose an app with a router error handler", function () {
                 var scoreConfig = {
                     routers: [{
-                        errorHandlers:['sendError'],
+                        errorHandlers: ['test/modules/handlers/sendError'],
                         routes: [{
                             methods: {
                                 get: {
-                                    handlers: ['throwError']
+                                    handlers: ['test/modules/handlers/throwError']
                                 }
                             }
                         }]
@@ -291,30 +239,21 @@
                 };
                 var score = scoreFactory.composeAppSync(scoreConfig);
                 app.conduct(score);
-                request
+                return request
                     .get('/')
-                    .expect(501)
-                    .end(function (err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        try {
-                            res.text.should.equal('oops...');
-                            done();
-                        } catch (e) {
-                            done(e);
-                        }
+                    .then(function (res) {
+                        expect(res).to.have.status(501);
                     });
             });
 
-            it("should create a score and compose an app with a route error handler", function(done){
+            it("should create a score and compose an app with a route error handler", function () {
                 var scoreConfig = {
                     routers: [{
                         routes: [{
-                            errorHandlers:['sendError'],
+                            errorHandlers: ['test/modules/handlers/sendError'],
                             methods: {
                                 get: {
-                                    handlers: ['throwError']
+                                    handlers: ['test/modules/handlers/throwError']
                                 }
                             }
                         }]
@@ -322,30 +261,21 @@
                 };
                 var score = scoreFactory.composeAppSync(scoreConfig);
                 app.conduct(score);
-                request
+                return request
                     .get('/')
-                    .expect(501)
-                    .end(function (err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        try {
-                            res.text.should.equal('oops...');
-                            done();
-                        } catch (e) {
-                            done(e);
-                        }
+                    .then(function (res) {
+                        expect(res).to.have.status(501);
                     });
             });
 
-            it("should create a score and compose an app with a method error handler", function(done){
+            it("should create a score and compose an app with a method error handler", function () {
                 var scoreConfig = {
                     routers: [{
                         routes: [{
                             methods: {
                                 get: {
-                                    errorHandlers:['sendError'],
-                                    handlers: ['throwError']
+                                    errorHandlers: ['test/modules/handlers/sendError'],
+                                    handlers: ['test/modules/handlers/throwError']
                                 }
                             }
                         }]
@@ -353,31 +283,23 @@
                 };
                 var score = scoreFactory.composeAppSync(scoreConfig);
                 app.conduct(score);
-                request
+                return request
                     .get('/')
-                    .expect(501)
-                    .end(function (err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        try {
-                            res.text.should.equal('oops...');
-                            done();
-                        } catch (e) {
-                            done(e);
-                        }
+                    .then(function (res) {
+                        expect(res).to.have.status(200);
+                        expect(res.text).to.equal('oops...');
                     });
             });
 
-            it("should create a score and compose an app with a app error handler", function(done){
+            it("should create a score and compose an app with a app error handler", function () {
                 var scoreConfig = {
-                    errorHandlers:['sendError'],
+                    errorHandlers: ['test/modules/handlers/sendError'],
                     routers: [{
                         routes: [{
                             methods: {
                                 get: {
 
-                                    handlers: ['throwError']
+                                    handlers: ['test/modules/handlers/throwError']
                                 }
                             }
                         }]
@@ -385,23 +307,15 @@
                 };
                 var score = scoreFactory.composeAppSync(scoreConfig);
                 app.conduct(score);
-                request
+                return request
                     .get('/')
-                    .expect(501)
-                    .end(function (err, res) {
-                        if (err) {
-                            return done(err);
-                        }
-                        try {
-                            res.text.should.equal('oops...');
-                            done();
-                        } catch (e) {
-                            done(e);
-                        }
+                    .then(function (res) {
+                        expect(res).to.have.status(501);
+                        expect(res.text).to.equal('oops...');
                     });
             });
 
         });
 
     });
-}(require('../index'), require('should'), require('supertest')))
+}(require, describe, before, it))
