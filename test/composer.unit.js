@@ -185,7 +185,7 @@
                         routes: [{
                             methods: {
                                 get: {
-                                    validator: 'test/validators/user',
+                                    validator: 'test/validators/key',
                                     handlers: ['test/modules/handlers/helloWorld']
                                 }
                             }
@@ -286,7 +286,7 @@
                 return request
                     .get('/')
                     .then(function (res) {
-                        expect(res).to.have.status(200);
+                        expect(res).to.have.status(501);
                         expect(res.text).to.equal('oops...');
                     });
             });
