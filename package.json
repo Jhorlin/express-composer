@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "bluebird": "^2.9.24",
-    "extend": "^2.0.0",
+    "extend": "^2.0.1",
     "joi": "^5.1.0",
     "supertest": "^0.15.0",
     "utils-merge": "^1.0.0"
