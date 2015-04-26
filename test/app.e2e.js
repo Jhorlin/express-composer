@@ -4,8 +4,6 @@
 (function (require) {
     "use strict";
     var expressComposer = require('../index'),
-        should = require('should'),
-        supertest = require('supertest'),
         handlers = require('./utils/handlers'),
         joi = require('joi'),
         util = require('util'),
@@ -54,7 +52,6 @@
                     it("should respond with " + message, function () {
                         return request
                             .get([path.router, path.route].join('') || '/')
-                            .expect(200)
                             .then(function (res) {
                                 expect(res).to.have.status(200);
                                 expect(res.text).to.equal(message);
@@ -89,8 +86,7 @@
                     it("should respond with scope variable message: " + message, function () {
                         return request
                             .get([path.router, path.route].join('') || '/')
-                            .expect(200)
-                            .end(function (err, res) {
+                            .then(function (err, res) {
                                 expect(res).to.have.status(200);
                                 expect(res.text).to.equal(message);
                             });
@@ -183,6 +179,7 @@
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
                     var app,
                         message = "oops",
+                        request,
                         score = {
                             routers: [
                                 {
@@ -201,7 +198,8 @@
                         };
                     before(function () {
                         app = expressComposer();
-                        should.exist(app);
+                        expect(app).to.be.ok;
+                        request = chai.request(app);
                     });
 
                     it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
@@ -209,11 +207,10 @@
                     });
 
                     it("should return the error thrown", function (done) {
-                        var request = supertest(app);
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .expect(501)
-                            .end(function (err, res) {
+                            .then(function (err, res) {
+                                expect(res).to.have.status(501);
                                 if (err) {
                                     return done(err);
                                 }
@@ -233,6 +230,7 @@
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
                     var app,
                         message = "hello world",
+                        request,
                         score = {
                             routers: [
                                 {
@@ -248,7 +246,8 @@
                         };
                     before(function () {
                         app = expressComposer();
-                        should.exist(app);
+                        expect(app).to.be.ok;
+                        request = chai.request(app);
                     });
 
                     it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
@@ -256,21 +255,11 @@
                     });
 
                     it(util.format("should return the message %s", message), function (done) {
-                        var request = supertest(app);
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .expect(200)
-                            .end(function (err, res) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                try {
-                                    res.text.should.equal(message);
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-
+                            .then(function (res) {
+                                expect(res).to.have.status(200);
+                                expect(res.text).to.equal(message);
                             });
                     });
 
@@ -279,6 +268,7 @@
                 describe(util.format("test router error for handlerType:%s routerPath:%s routePath:%s",
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
                     var app,
+                        request,
                         message = "oops",
                         score = {
                             routers: [{
@@ -296,7 +286,8 @@
                         };
                     before(function () {
                         app = expressComposer();
-                        should.exist(app);
+                        expect(app).to.be.ok;
+                        request = chai.request(app);
                     });
 
                     it(util.format("should conduct a route with a base path of '%s' that throws an error ", [path.router, path.route].join('') || '/', message), function () {
@@ -304,21 +295,11 @@
                     });
 
                     it("should return the error thrown", function (done) {
-                        var request = supertest(app);
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .expect(501)
-                            .end(function (err, res) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                try {
-                                    res.text.should.equal(message);
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-
+                            .then(function (err, res) {
+                                expect(res).to.have.status(501);
+                                expect(res.text).to.equal(message);
                             });
                     });
 
@@ -328,6 +309,7 @@
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
                     var app,
                         message = "oops",
+                        request,
                         score = {
                             errorHandlers: [handlers.error()[handlerType]],
                             routers: [{
@@ -344,7 +326,8 @@
                         };
                     before(function () {
                         app = expressComposer();
-                        should.exist(app);
+                        expect(app).to.be.ok;
+                        request = chai.request(app);
                     });
 
                     it(util.format("should conduct a route with a base path of '%s' that throws an error ", [path.router, path.route].join('') || '/', message), function () {
@@ -355,18 +338,9 @@
                         var request = supertest(app);
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .expect(501)
-                            .end(function (err, res) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                try {
-                                    res.text.should.equal(message);
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-
+                            .then(function (err, res) {
+                                expect(res).to.have.status(501);
+                                expect(res).to.have.property('text', message);
                             });
                     });
 
@@ -376,6 +350,7 @@
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
                     var app,
                         message = "hello world",
+                        request,
                         score = {
                             routers: [{
                                 path: path.router,
@@ -392,7 +367,8 @@
                         };
                     before(function () {
                         app = expressComposer();
-                        should.exist(app);
+                        expect(app).to.be.ok;
+                        request = chai.request(app);
                     });
 
                     it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
@@ -400,21 +376,12 @@
                     });
 
                     it("should return the error thrown", function (done) {
-                        var request = supertest(app);
                         request
                             .get([path.router, path.route].join('') || '/')
                             .expect(200)
-                            .end(function (err, res) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                try {
-                                    res.text.should.equal(message);
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-
+                            .then(function (err, res) {
+                                expect(res).to.have.status(200);
+                                expect(res).to.have.property('text', message);
                             });
                     });
                 });
@@ -423,6 +390,7 @@
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
                     var app,
                         message = "hello world",
+                        request,
                         score = {
                             routers: [{
                                 path: path.router,
@@ -441,6 +409,7 @@
                     before(function () {
                         app = expressComposer();
                         should.exist(app);
+                        request = chai.request(app);
                     });
 
                     it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
@@ -448,21 +417,11 @@
                     });
 
                     it("should return the error thrown", function (done) {
-                        var request = supertest(app);
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .expect(200)
-                            .end(function (err, res) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                try {
-                                    res.text.should.equal(message);
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-
+                            .then(function (err, res) {
+                                expect(res).to.have.status(200);
+                                expect(res).to.have.property('test', message);
                             });
                     });
                 });
@@ -471,6 +430,7 @@
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
                     var app,
                         message = "hello world",
+                        request,
                         score = {
                             routers: [
                                 {
@@ -489,7 +449,8 @@
                         };
                     before(function () {
                         app = expressComposer();
-                        should.exist(app);
+                        expect(app).to.be.ok;
+                        request = chai.request(app);
                     });
 
                     it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
@@ -500,18 +461,9 @@
                         var request = supertest(app);
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .expect(200)
-                            .end(function (err, res) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                try {
-                                    res.text.should.equal(message);
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-
+                            .then(function (err, res) {
+                                expect(res).to.have.status(200);
+                                expect(res).to.have.property('text', message);
                             });
                     });
                 });
@@ -520,6 +472,7 @@
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
                     var app,
                         message = "hello world",
+                        request,
                         score = {
                             preHandlers: [handlers.setScope("message", message)[handlerType]],
                             routers: [
@@ -538,7 +491,8 @@
                         };
                     before(function () {
                         app = expressComposer();
-                        should.exist(app);
+                        expect(app).to.be.ok;
+                        request = chai.request(app);
                     });
 
                     it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
@@ -546,21 +500,11 @@
                     });
 
                     it("should return the error thrown", function (done) {
-                        var request = supertest(app);
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .expect(200)
-                            .end(function (err, res) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                try {
-                                    res.text.should.equal(message);
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-
+                            .then(function (err, res) {
+                                expect(res).to.have.status(200);
+                                expect(res).to.have.property('test', message);
                             });
                     });
                 });
@@ -569,6 +513,7 @@
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
                     var app,
                         message = "hello world",
+                        request,
                         score = {
                             routers: [
                                 {
@@ -591,7 +536,8 @@
                         };
                     before(function () {
                         app = expressComposer();
-                        should.exist(app);
+                        expect(app).to.be.ok;
+                        request = chai.request(app);
                     });
 
                     it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
@@ -599,21 +545,11 @@
                     });
 
                     it("should return the error thrown", function (done) {
-                        var request = supertest(app);
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .expect(200)
-                            .end(function (err, res) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                try {
-                                    res.text.should.equal(message);
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-
+                            .then(function (err, res) {
+                                expect(res).to.have.status(200);
+                                expect(res).to.have.property('test', message);
                             });
                     });
                 });
