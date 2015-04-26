@@ -43,10 +43,8 @@
 
                     beforeEach(function () {
                         app = expressComposer();
-                        request = chai.request(app);
-                    });
-                    it(util.format("should conduct a route with a base path of '%s'", [path.router, path.route].join('') || '/'), function () {
                         app.conduct(score);
+                        request = chai.request(app);
                     });
 
                     it("should respond with " + message, function () {
@@ -199,11 +197,8 @@
                     before(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
-                        request = chai.request(app);
-                    });
-
-                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
                         app.conduct(score);
+                        request = chai.request(app);
                     });
 
                     it("should return the error thrown", function (done) {
@@ -247,12 +242,10 @@
                     before(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
+                        app.conduct(score);
                         request = chai.request(app);
                     });
 
-                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
-                        app.conduct(score);
-                    });
 
                     it(util.format("should return the message %s", message), function (done) {
                         request
@@ -287,11 +280,8 @@
                     before(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
-                        request = chai.request(app);
-                    });
-
-                    it(util.format("should conduct a route with a base path of '%s' that throws an error ", [path.router, path.route].join('') || '/', message), function () {
                         app.conduct(score);
+                        request = chai.request(app);
                     });
 
                     it("should return the error thrown", function (done) {
@@ -327,12 +317,10 @@
                     before(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
+                        app.conduct(score);
                         request = chai.request(app);
                     });
 
-                    it(util.format("should conduct a route with a base path of '%s' that throws an error ", [path.router, path.route].join('') || '/', message), function () {
-                        app.conduct(score);
-                    });
 
                     it("should return the error thrown", function (done) {
                         var request = supertest(app);
@@ -368,11 +356,8 @@
                     before(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
-                        request = chai.request(app);
-                    });
-
-                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
                         app.conduct(score);
+                        request = chai.request(app);
                     });
 
                     it("should return the error thrown", function (done) {
@@ -408,12 +393,9 @@
 
                     before(function () {
                         app = expressComposer();
-                        should.exist(app);
-                        request = chai.request(app);
-                    });
-
-                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
+                        expect(app).to.be.ok;
                         app.conduct(score);
+                        request = chai.request(app);
                     });
 
                     it("should return the error thrown", function (done) {
@@ -450,11 +432,8 @@
                     before(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
-                        request = chai.request(app);
-                    });
-
-                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
                         app.conduct(score);
+                        request = chai.request(app);
                     });
 
                     it("should return the error thrown", function (done) {
@@ -492,12 +471,10 @@
                     before(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
+                        app.conduct(score);
                         request = chai.request(app);
                     });
 
-                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
-                        app.conduct(score);
-                    });
 
                     it("should return the error thrown", function (done) {
                         request
@@ -537,11 +514,8 @@
                     before(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
-                        request = chai.request(app);
-                    });
-
-                    it(util.format("should conduct a route with a base path of '%s' that throws an error %s", [path.router, path.route].join('') || '/', message), function () {
                         app.conduct(score);
+                        request = chai.request(app);
                     });
 
                     it("should return the error thrown", function (done) {
