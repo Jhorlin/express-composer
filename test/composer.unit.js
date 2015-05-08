@@ -8,7 +8,7 @@
         chai = require('./utils/chai'),
         httpRequest = chai.request,
         expect = chai.expect;
-    describe.only("test composer", function () {
+    describe("test composer", function () {
         describe("test instantiation of default factory", function () {
             var scoreFactory;
             before(function () {
@@ -125,7 +125,7 @@
                 app.conduct(score);
                 return request
                     .get('/')
-                    .end(function (res) {
+                    .then(function (res) {
                         expect(res).to.have.status(200);
                         expect(res.text).to.equal('Hello World!');
                     });
