@@ -84,7 +84,7 @@
                     it("should respond with scope variable message: " + message, function () {
                         return request
                             .get([path.router, path.route].join('') || '/')
-                            .then(function (err, res) {
+                            .then(function (res) {
                                 expect(res).to.have.status(200);
                                 expect(res.text).to.equal(message);
                             });
@@ -133,7 +133,7 @@
                             .get(([path.router, path.route].join('') || '/') + '?key=test')
                             .then(function (res) {
                                 expect(res).to.have.status(200);
-                                expect(res.message).to.equal(message);
+                                expect(res.text).to.equal(message);
                             });
                     });
                 });
@@ -166,7 +166,7 @@
                     it("should return the error thrown", function (done) {
                         return request
                             .get([path.router, path.route].join('') || '/')
-                            .then(function (err, res) {
+                            .then(function (res) {
                                 expect(res).to.have.status(501);
                             });
                     });
@@ -204,18 +204,9 @@
                     it("should return the error thrown", function (done) {
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .then(function (err, res) {
+                            .then(function (res) {
                                 expect(res).to.have.status(501);
-                                if (err) {
-                                    return done(err);
-                                }
-                                try {
-                                    res.text.should.equal(message);
-                                    done();
-                                } catch (e) {
-                                    done(e);
-                                }
-
+                                expect(res.text).to.equal(message);
                             });
                     });
 
@@ -287,7 +278,7 @@
                     it("should return the error thrown", function (done) {
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .then(function (err, res) {
+                            .then(function (res) {
                                 expect(res).to.have.status(501);
                                 expect(res.text).to.equal(message);
                             });
@@ -326,7 +317,7 @@
                         var request = supertest(app);
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .then(function (err, res) {
+                            .then(function (res) {
                                 expect(res).to.have.status(501);
                                 expect(res).to.have.property('text', message);
                             });
@@ -364,7 +355,7 @@
                         request
                             .get([path.router, path.route].join('') || '/')
                             .expect(200)
-                            .then(function (err, res) {
+                            .then(function (res) {
                                 expect(res).to.have.status(200);
                                 expect(res).to.have.property('text', message);
                             });
@@ -401,9 +392,9 @@
                     it("should return the error thrown", function (done) {
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .then(function (err, res) {
+                            .then(function (res) {
                                 expect(res).to.have.status(200);
-                                expect(res).to.have.property('test', message);
+                                expect(res).to.have.property('text', message);
                             });
                     });
                 });
@@ -440,7 +431,7 @@
                         var request = supertest(app);
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .then(function (err, res) {
+                            .then(function (res) {
                                 expect(res).to.have.status(200);
                                 expect(res).to.have.property('text', message);
                             });
@@ -479,9 +470,9 @@
                     it("should return the error thrown", function (done) {
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .then(function (err, res) {
+                            .then(function (res) {
                                 expect(res).to.have.status(200);
-                                expect(res).to.have.property('test', message);
+                                expect(res).to.have.property('text', message);
                             });
                     });
                 });
@@ -521,9 +512,9 @@
                     it("should return the error thrown", function (done) {
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .then(function (err, res) {
+                            .then(function (res) {
                                 expect(res).to.have.status(200);
-                                expect(res).to.have.property('test', message);
+                                expect(res).to.have.property('text', message);
                             });
                     });
                 });
