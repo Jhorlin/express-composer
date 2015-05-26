@@ -65,7 +65,7 @@
         setScope: function (property, value) {
             var handler = function (req, res) {
                 var self = this;
-                Promise.resolve(typeof value === 'function' ? value() : value).then(function () {
+                return Promise.resolve(typeof value === 'function' ? value() : value).then(function () {
                     var properties = property.split('.'),
                         lastIndex = properties.length - 1,
                         object = self;

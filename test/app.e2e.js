@@ -128,7 +128,7 @@
                             });
                     });
 
-                    it("should respond with " + message, function (done) {
+                    it("should respond with " + message, function () {
                         return request
                             .get(([path.router, path.route].join('') || '/') + '?key=test')
                             .then(function (res) {
@@ -163,7 +163,7 @@
                         request = chai.request(app);
                     });
 
-                    it("should return the error thrown", function (done) {
+                    it("should return the error thrown", function () {
                         return request
                             .get([path.router, path.route].join('') || '/')
                             .then(function (res) {
@@ -201,7 +201,7 @@
                         request = chai.request(app);
                     });
 
-                    it("should return the error thrown", function (done) {
+                    it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
                             .then(function (res) {
@@ -238,7 +238,7 @@
                     });
 
 
-                    it(util.format("should return the message %s", message), function (done) {
+                    it(util.format("should return the message %s", message), function () {
                         request
                             .get([path.router, path.route].join('') || '/')
                             .then(function (res) {
@@ -275,7 +275,7 @@
                         request = chai.request(app);
                     });
 
-                    it("should return the error thrown", function (done) {
+                    it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
                             .then(function (res) {
@@ -313,8 +313,7 @@
                     });
 
 
-                    it("should return the error thrown", function (done) {
-                        var request = supertest(app);
+                    it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
                             .then(function (res) {
@@ -351,7 +350,7 @@
                         request = chai.request(app);
                     });
 
-                    it("should return the error thrown", function (done) {
+                    it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
                             .expect(200)
@@ -389,7 +388,7 @@
                         request = chai.request(app);
                     });
 
-                    it("should return the error thrown", function (done) {
+                    it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
                             .then(function (res) {
@@ -427,8 +426,7 @@
                         request = chai.request(app);
                     });
 
-                    it("should return the error thrown", function (done) {
-                        var request = supertest(app);
+                    it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
                             .then(function (res) {
@@ -467,7 +465,7 @@
                     });
 
 
-                    it("should return the error thrown", function (done) {
+                    it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
                             .then(function (res) {
@@ -509,7 +507,7 @@
                         request = chai.request(app);
                     });
 
-                    it("should return the error thrown", function (done) {
+                    it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
                             .then(function (res) {
