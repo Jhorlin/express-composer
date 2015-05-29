@@ -353,7 +353,6 @@
                     it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
-                            .expect(200)
                             .then(function (res) {
                                 expect(res).to.have.status(200);
                                 expect(res).to.have.property('text', message);
@@ -400,6 +399,7 @@
 
                 describe(util.format("test router preHandler for handlerType:%s routerPath:%s routePath:%s",
                     handlerType, path.router || 'Default', path.route || 'Default'), function () {
+                    this.timeout(100000);
                     var app,
                         message = "hello world",
                         request,

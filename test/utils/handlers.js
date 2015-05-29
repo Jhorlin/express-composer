@@ -6,7 +6,7 @@
     var Promise = require('bluebird');
 
     function createHandlerTypes(handler, delay) {
-        return {
+        var handlers = {
             standard: handler,
             promise: function (req, res) {
                 var self = this;
@@ -33,7 +33,9 @@
                     next();
                 }.bind(this), delay || 0);
             }
-        };
+        }
+
+        return handlers;
     }
 
     function createErrorHandlerTypes(handler, delay) {
@@ -57,13 +59,13 @@
 
     module.exports = {
         log: function (message) {
-            var handler = function (req, res) {
+            var handler = function log(req, res) {
                 console.log(message);
             };
             return createHandlerTypes(handler);
         },
         setScope: function (property, value) {
-            var handler = function (req, res) {
+            var handler = function setScope(req, res) {
                 var self = this;
                 return Promise.resolve(typeof value === 'function' ? value() : value).then(function () {
                     var properties = property.split('.'),
@@ -81,7 +83,7 @@
             return createHandlerTypes(handler);
         },
         pushScope: function (property, value, delay) {
-            var handler = function (req, res) {
+            var handler = function pushScope(req, res) {
                 var self = this;
                 q.when(typeof value === 'function' ? value() : value).then(function () {
                     var properties = property.split('.'),
@@ -99,13 +101,13 @@
             return createHandlerTypes(handler, delay);
         },
         respond: function (message) {
-            var handler = function (req, res) {
+            var handler = function response(req, res) {
                 res.send(message);
             };
             return createHandlerTypes(handler);
         },
         respondScope: function (property) {
-            var handler = function (req, res) {
+            var handler = function respondScope(req, res) {
                 var properties = property.split('.'),
                     object = this;
                 properties.forEach(function (property) {
@@ -116,7 +118,7 @@
             return createHandlerTypes(handler);
         },
         respondScopeJson: function (property, delay) {
-            var handler = function (req, res) {
+            var handler = function respondScopeJson(req, res) {
                 var properties = property.split('.'),
                     object = this;
                 properties.forEach(function (property) {
@@ -127,13 +129,13 @@
             return createHandlerTypes(handler, delay);
         },
         throwError: function (message) {
-            var handler = function (req, res) {
+            var handler = function throwError(req, res) {
                 throw new Error(message);
             };
             return createHandlerTypes(handler);
         },
         error: function () {
-            var handler = function (err, req, res) {
+            var handler = function error(err, req, res) {
                 res.status(501).send(err.message);
             };
             return createErrorHandlerTypes(handler);
