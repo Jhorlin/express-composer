@@ -10,7 +10,7 @@
         chai = require('./utils/chai'),
         expect = chai.expect;
 
-    describe.only("test that we set the results property for named functions",function(){
+    describe("test that we set the results property for named functions",function(){
         var app,
         request,
         message = "hello world",

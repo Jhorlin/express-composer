@@ -1,93 +1,137 @@
-/**
- * Created by jhorlin.dearmas on 3/6/2015.
- */
-(function (require) {
-    "use strict";
+(function () {
+    'use strict';
     var gulp = require('gulp'),
-        mocha = require('gulp-mocha'),
-        through = require('through2'),
-        passThrough = through.obj(function(file, enc, cb){
-            cb(null, file);
-        }),
-        runSequence = require('run-sequence').use(gulp),
         cover = require('gulp-coverage'),
-        watch = require('gulp-watch');
+        exit = require('gulp-exit'),
+        mocha = require('gulp-mocha'),
+        docjs2md = require('gulp-jsdoc-to-markdown'),
+        concat = require('gulp-concat'),
+        coveralls = require('gulp-coveralls'),
+        fs = require('fs'),
+        gutil = require('gulp-util'),
+        streamProcessors,
+        runSequence = require('run-sequence'),
+        paths = {
+            src: ['./index.js', 'lib/**/*.js'],
+            unit: ['test/**/*.unit.js'],
+            e2e:['test/**/*.e2e.js'],
+            lcov: ['reports/coverage.lcov']
+        };
 
-    function srcUnit() {
-        return gulp.src('test/**/*.unit.js', {read: false});
-    }
-
-    function srcE2E() {
-        return gulp.src('test/**/*.e2e.js', {read: false});
-    }
-
-    function testUnit(inst) {
-        var instrument = inst || passThrough;
-        return srcUnit()
-            .pipe(instrument)
-            .pipe(mocha());
-    }
-
-    function testE2E(inst) {
-        var instrument = inst || passThrough;
-        return srcE2E()
-            .pipe(instrument)
-            .pipe(mocha());
-    }
-
-    function coverUnit() {
-        return testUnit(cover.instrument({
-            pattern: ['lib/**/*.js']
-        }))
-            .pipe(cover.gather())
-            .pipe(cover.format())
-            .pipe(gulp.dest('reports'));
-    }
-
-    function coverE2E() {
-        return testE2E(cover.instrument({
-            pattern: ['lib/**/*.js']
-        }))
-            .pipe(cover.gather())
-            .pipe(cover.format())
-            .pipe(gulp.dest('reports'));
-    }
-
-    gulp.task('test:unit', function () {
-        return testUnit();
+    gulp.task('exit', function () {
+        streamProcessors.push(exit());
     });
 
-    gulp.task('test:e2e', function () {
-        return testE2E();
+    gulp.task('src', function () {
+        streamProcessors = [gulp.src(paths.src)];
     });
 
-    gulp.task('cover:unit', function () {
-        return coverUnit();
+    gulp.task('lcov', function () {
+        streamProcessors = [gulp.src(paths.lcov)];
     });
 
-    gulp.task('cover:e2e', function () {
-        return coverE2E();
+    gulp.task('unit', function () {
+        streamProcessors = [gulp.src(paths.unit)];
     });
 
-    gulp.task('watch:unit', function () {
-        return srcUnit()
-            .pipe(watch('test/**/*.unit.js'))
-            .pipe(through(function (data) {
-                this.queue(testUnit());
-            }, function () {
-                this.emit('end');
-            }))
-            ;
+    gulp.task('e2e', function () {
+        streamProcessors = [gulp.src(paths.e2e)];
     });
 
-    gulp.task('watch:e2e', function () {
-        this.watch('test/**/*.e2e.js',['test:e2e']);
+    gulp.task('unit:e2e', function(){
+        streamProcessors = [gulp.src(paths.e2e.concat(paths.unit))];
+    })
+
+    gulp.task('process', function () {
+        var stream = streamProcessors.shift();
+        return streamProcessors.reduce(function (stream, processor) {
+            return stream.pipe(processor);
+        }, stream);
     });
 
-    gulp.task('watch', ['watch:unit', 'watch:e2e']);
+    gulp.task('coveralls', function () {
+        var errored = false;
+        streamProcessors.push(coveralls()
+                .on('error', function (err) {
+                    errored = true;
+                    gutil.log("coveralls failed:", err.message);
+                })
+                .on('end', function () {
+                    if (errored) {
+                        process.exit(0);
+                    }
+                })
+        );
+    });
 
-    gulp.task('test', ['test:unit', 'test:e2e']);
+    gulp.task('mocha', function () {
+        var errored = false;
+        streamProcessors.push(mocha()
+                .on('error', function (err) {
+                    errored = true;
+                    gutil.log("mocha failed:", err.message);
+                })
+                .on('end', function () {
+                    if (errored) {
+                        process.exit(0);
+                    }
+                })
+        );
+        return streamProcessors;
+    })
 
-    gulp.task('cover', ['cover:unit', 'cover:e2e']);
+    gulp.task('instrument', function () {
+        return streamProcessors.push(cover.instrument({pattern: paths.src}));
+    });
 
-}(require));
+
+    gulp.task('gather', function () {
+        return streamProcessors.push(cover.gather());
+    });
+
+    gulp.task('enforce', function () {
+        return streamProcessors.push(cover.enforce({
+            statements: 80,
+            blocks: 80,
+            lines: 80,
+            uncovered: undefined
+        })
+            .on('error', function (err) {
+                gutil.log("enforce failed:", err.message);
+            }));
+    })
+
+    gulp.task('format', function () {
+        return streamProcessors.push(cover.format([
+            {reporter: 'html'},
+            {reporter: 'lcov'}
+        ]));
+    });
+
+    gulp.task('report', function () {
+        return streamProcessors.push(gulp.dest('reports'));
+    });
+
+    gulp.task('docjs2md', function () {
+        streamProcessors.push(concat("README.md"));
+        streamProcessors.push(docjs2md({template: fs.readFileSync("docjs2md/README.hbs", "utf8")})
+                .on('error', function (err) {
+                    gutil.log("jsdoc2md failed:", err.message);
+                })
+        );
+        streamProcessors.push(gulp.dest("."));
+    })
+
+    /************* TASKS ******************/
+    gulp.task('test:unit', ['unit', 'mocha', 'process']);
+    gulp.task('test:e2e', ['e2e', 'mocha', 'process']);
+    gulp.task('test', ['unit:e2e', 'mocha', 'process']);
+    gulp.task('cover', ['unit:e2e', 'instrument', 'mocha', 'gather', 'format', 'report', 'enforce', 'process'], function () {
+        return runSequence(['lcov', 'coveralls','exit','process']);
+    });
+    gulp.task('doc', ['src', 'docjs2md', 'process']);
+    /**************************************/
+
+    gulp.task('default', ['cover']);
+
+}())
