@@ -6,7 +6,7 @@
 
     var expressComposer = require('../index'),
         chai = require('./utils/chai'),
-        httpRequest = chai.request,
+        superTest = require('supertest-as-promised'),
         expect = chai.expect;
     describe("test composer", function () {
         describe("test instantiation of default factory", function () {
@@ -44,7 +44,7 @@
 
             beforeEach(function () {
                 app = expressComposer();
-                request = httpRequest(app);
+                request = superTest(app);
             });
 
             it("should create a score", function () {
@@ -102,8 +102,8 @@
                 app.conduct(score);
                 return request
                     .get('/')
+                    .expect(200)
                     .then(function (res) {
-                        expect(res).to.have.status(200);
                         expect(res.text).to.equal('Hello World!');
                     });
             });
@@ -125,8 +125,8 @@
                 app.conduct(score);
                 return request
                     .get('/')
+                    .expect(200)
                     .then(function (res) {
-                        expect(res).to.have.status(200);
                         expect(res.text).to.equal('Hello World!');
                     });
             });
@@ -149,8 +149,8 @@
                 app.conduct(score);
                 return request
                     .get('/')
+                    .expect(200)
                     .then(function (res) {
-                        expect(res).to.have.status(200);
                         expect(res.text).to.equal('Hello World!');
                     });
             });
@@ -173,8 +173,8 @@
                 app.conduct(score);
                 return request
                     .get('/')
+                    .expect(200)
                     .then(function (res) {
-                        expect(res).to.have.status(200);
                         expect(res.text).to.equal('Hello World!');
                     });
             });
