@@ -1,137 +1,158 @@
+/**
+ * Created by jhorlin.dearmas on 6/4/2015.
+ */
 (function () {
     'use strict';
     var gulp = require('gulp'),
-        cover = require('gulp-coverage'),
-        exit = require('gulp-exit'),
-        mocha = require('gulp-mocha'),
-        docjs2md = require('gulp-jsdoc-to-markdown'),
-        concat = require('gulp-concat'),
+        path = require('path'),
+        runSequence = require('run-sequence').use(gulp),
         coveralls = require('gulp-coveralls'),
+        cover = require('gulp-coverage'),
+        jshint = require('gulp-jshint'),
+        stylish = require('jshint-stylish'),
+        jsinspect = require('gulp-jsinspect'),
+        nsp = require('gulp-nsp'),
+        jscs = require('gulp-jscs'),
+        docjs2md = require('gulp-jsdoc-to-markdown'),
         fs = require('fs'),
-        gutil = require('gulp-util'),
-        streamProcessors,
-        runSequence = require('run-sequence'),
+        mocha = require('gulp-mocha'),
+        buddy = require('gulp-buddy.js'),
+        concat = require('gulp-concat'),
+        expect = require('gulp-expect-file'),
         paths = {
-            src: ['./index.js', 'lib/**/*.js'],
-            unit: ['test/**/*.unit.js'],
-            e2e:['test/**/*.e2e.js'],
-            lcov: ['reports/coverage.lcov']
-        };
+            src: ['lib/**/*.js'],
+            unit: 'test/**/*.unit.js',
+            e2e: 'test/**/*.e2e.js',
+            lcov: 'reports/coverage.lcov'
+        },
+        streamProcessors;
 
-    gulp.task('exit', function () {
-        streamProcessors.push(exit());
-    });
+    gulp.task('process', function (done) {
+        var stream = streamProcessors.shift();
+        return streamProcessors.reduce(function (stream, processor) {
+            return stream.pipe(processor
+                    .on('error', function (err) {
+                        done(err);
+                    })
+            );
+        }, stream);
 
-    gulp.task('src', function () {
-        streamProcessors = [gulp.src(paths.src)];
-    });
-
-    gulp.task('lcov', function () {
-        streamProcessors = [gulp.src(paths.lcov)];
     });
 
     gulp.task('unit', function () {
         streamProcessors = [gulp.src(paths.unit)];
-    });
+    })
 
     gulp.task('e2e', function () {
         streamProcessors = [gulp.src(paths.e2e)];
-    });
-
-    gulp.task('unit:e2e', function(){
-        streamProcessors = [gulp.src(paths.e2e.concat(paths.unit))];
     })
 
-    gulp.task('process', function () {
-        var stream = streamProcessors.shift();
-        return streamProcessors.reduce(function (stream, processor) {
-            return stream.pipe(processor);
-        }, stream);
-    });
-
-    gulp.task('coveralls', function () {
-        var errored = false;
-        streamProcessors.push(coveralls()
-                .on('error', function (err) {
-                    errored = true;
-                    gutil.log("coveralls failed:", err.message);
-                })
-                .on('end', function () {
-                    if (errored) {
-                        process.exit(0);
-                    }
-                })
-        );
-    });
+    gulp.task('src', function () {
+        streamProcessors = [gulp.src(paths.src)];
+    })
 
     gulp.task('mocha', function () {
-        var errored = false;
-        streamProcessors.push(mocha()
-                .on('error', function (err) {
-                    errored = true;
-                    gutil.log("mocha failed:", err.message);
-                })
-                .on('end', function () {
-                    if (errored) {
-                        process.exit(0);
-                    }
-                })
-        );
-        return streamProcessors;
+        streamProcessors.push(mocha());
     })
 
-    gulp.task('instrument', function () {
-        return streamProcessors.push(cover.instrument({pattern: paths.src}));
+    gulp.task('jsinspect', function () {
+        streamProcessors.push(jsinspect());
     });
 
+    gulp.task('buddy', function () {
+        streamProcessors.push(buddy());
+    });
+
+    gulp.task('jshint', function () {
+        streamProcessors.push(jshint());
+        streamProcessors.push(jshint.reporter(stylish));
+    });
+
+    gulp.task('instrument', function () {
+        streamProcessors.push(cover.instrument({pattern: paths.src}));
+    });
 
     gulp.task('gather', function () {
-        return streamProcessors.push(cover.gather());
+        streamProcessors.push(cover.gather());
     });
 
     gulp.task('enforce', function () {
-        return streamProcessors.push(cover.enforce({
-            statements: 80,
-            blocks: 80,
-            lines: 80,
-            uncovered: undefined
-        })
-            .on('error', function (err) {
-                gutil.log("enforce failed:", err.message);
-            }));
-    })
+        streamProcessors.push(cover.enforce({
+                statements: 80,
+                blocks: 80,
+                lines: 80,
+                uncovered: undefined
+            })
+        )
+    });
+
+    gulp.task('report', function () {
+        streamProcessors.push(gulp.dest('reports'));
+    });
 
     gulp.task('format', function () {
-        return streamProcessors.push(cover.format([
+        streamProcessors.push(cover.format([
             {reporter: 'html'},
             {reporter: 'lcov'}
         ]));
     });
 
-    gulp.task('report', function () {
-        return streamProcessors.push(gulp.dest('reports'));
+    gulp.task('coveralls', function () {
+        streamProcessors.push(coveralls());
+    });
+
+    gulp.task('inspect', ['src', 'jsInspect', 'process']);
+
+    gulp.task('nsp', function (done) {
+        nsp({
+            path: './package.json'
+        }, done);
+    });
+
+    gulp.task('jscs', function () {
+        streamProcessors.push(jscs());
+    });
+
+    gulp.task('lcov', function () {
+        streamProcessors = [gulp.src(paths.lcov)];
+        // coveralls doesn't check that the file exists so we want to check that it does
+        streamProcessors.push(expect(paths.lcov));
     });
 
     gulp.task('docjs2md', function () {
         streamProcessors.push(concat("README.md"));
-        streamProcessors.push(docjs2md({template: fs.readFileSync("docjs2md/README.hbs", "utf8")})
-                .on('error', function (err) {
-                    gutil.log("jsdoc2md failed:", err.message);
-                })
-        );
+        streamProcessors.push(docjs2md({template: fs.readFileSync("docjs2md/README.hbs", "utf8")}));
         streamProcessors.push(gulp.dest("."));
     })
 
-    /************* TASKS ******************/
-    gulp.task('test:unit', ['unit', 'mocha', 'process']);
-    gulp.task('test:e2e', ['e2e', 'mocha', 'process']);
-    gulp.task('test', ['unit:e2e', 'mocha', 'process']);
-    gulp.task('cover', ['unit:e2e', 'instrument', 'mocha', 'gather', 'format', 'report', 'enforce', 'process'], function () {
-        return runSequence(['lcov', 'coveralls','exit','process']);
-    });
-    gulp.task('doc', ['src', 'docjs2md', 'process']);
-    /**************************************/
+    gulp.task('track', ['lcov', 'coveralls', 'process'])
 
-    gulp.task('default', ['cover']);
+    /** tasks **/
+
+    gulp.task('test:unit', ['unit', 'mocha', 'process'])
+
+    gulp.task('test:e2e',['e2e','mocha','process'])
+
+    gulp.task('test', function(){
+        return runSequence(['test:unit', 'test:e2e']);
+    })
+
+    gulp.task('test', ['unit', 'mocha', 'process'])
+
+    gulp.task('quality', ['src', 'buddy', 'jsinspect', 'process'])
+
+    gulp.task('secure', ['nsp']);
+
+    gulp.task('doc', ['src', 'docjs2md', 'process'])
+
+    gulp.task('style', ['src', 'jshint', 'jscs', 'process']);
+
+    gulp.task('cover', ['unit', 'instrument', 'mocha', 'gather', 'format', 'report', 'enforce', 'process']);
+
+    /**********/
+
+    gulp.task('default', ['cover', 'quality', 'secure', 'style'], function () {
+        return runSequence(['track']);
+    });
 
 }())

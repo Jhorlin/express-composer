@@ -8,6 +8,7 @@
         joi = require('joi'),
         util = require('util'),
         chai = require('./utils/chai'),
+        supertest = require('supertest-as-promised'),
         expect = chai.expect;
 
     describe("Test express composer composition and routes", function () {
@@ -44,7 +45,7 @@
                     beforeEach(function () {
                         app = expressComposer();
                         app.conduct(score);
-                        request = chai.request(app);
+                        request = supertest(app);
                     });
 
                     it("should respond with " + message, function () {
