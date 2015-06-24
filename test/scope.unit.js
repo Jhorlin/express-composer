@@ -1,20 +1,22 @@
 /**
  * Created by jhorlin.dearmas on 12/30/2014.
  */
-(function (Scope, should) {
+(function (Scope) {
     'use strict';
 
-    var Promise = require('bluebird');
+    var Promise = require('bluebird'),
+        chai = require('chai'),
+        expect = chai.expect;
     describe("test scope", function () {
         describe("test parent scope", function () {
             it("should create an instance of a scope", function () {
                 var scope = new Scope();
-                should.exist(scope);
+                expect(scope).to.be.ok;
             });
 
             it("should create an instance of a scope with out new", function () {
                 var scope = Scope();
-                should.exist(scope);
+                expect(scope).to.be.ok;
             });
 
             var argument = {
@@ -45,55 +47,35 @@
                 ];
 
             argumentTypes.forEach(function (arg) {
-                it("should create a parent scope extended from " + arg.type, function (done) {
+                it("should create a parent scope extended from " + arg.type, function () {
                     var scope = new Scope(arg.value);
-                    scope.ready.then(function () {
-                        try {
-                            should.exist(scope);
-                            scope.should.have.property('name', 'test');
-                            scope.should.have.property('age', 33);
-                            done();
-                        } catch (err) {
-                            done(err);
-                        }
+                    expect(scope).to.be.ok
+                    return scope.ready.then(function (scope) {
+                        expect(scope).to.be.ok
+                        expect(scope).to.have.property('name', 'test');
+                        expect(scope).to.have.property('age', 33);
                     });
                 });
 
                 it("should set a parent scope extended from " + arg.type, function () {
                     var scope = new Scope(arg.value);
-                    return scope.ready.then(function () {
-                        should.exist(scope);
-                        scope.should.have.property('name', 'test');
-                        scope.should.have.property('age', 33);
+                    expect(scope).to.be.ok
+                    return scope.ready.then(function (scope) {
+                        expect(scope).to.be.ok
+                        expect(scope).to.have.property('name', 'test');
+                        expect(scope).to.have.property('age', 33);
                         scope.set({
                             setName: 'testSet',
                             age: 19
-                        }).then(function () {
-                            scope.should.have.property('name', 'test');
-                            scope.should.have.property('setName', 'testSet');
-                            scope.should.have.property('age', 19);
+                        }).then(function (scope) {
+                            expect(scope).to.be.ok
+                            expect(scope).to.have.property('setName', 'testSet');
+                            expect(scope).to.have.property('age', 19);
+                            expect(scope).to.not.have.property('name');
                         });
                     });
                 });
 
-
-                it("should set a parent scope extended from " + arg.type + " and unset any old values", function () {
-                    var scope = new Scope(arg.value, true);
-                    return scope.ready.then(function () {
-                        should.exist(scope);
-                        scope.should.have.property('name', 'test');
-                        scope.should.have.property('age', 33);
-                        scope.set({
-                            nameSet: 'testSet',
-                            ageSet: 21
-                        }).then(function () {
-                            scope.should.have.property('nameSet', 'testSet');
-                            scope.should.have.property('ageSet', 21);
-                            (scope.name === undefined).should.be.true;
-                            (scope.age === undefined).should.be.true;
-                        });
-                    });
-                });
             });
 
         });
@@ -102,7 +84,7 @@
             var parentScope;
             before(function () {
                 parentScope = new Scope({
-                    name: 'test',
+                    parentName: 'test',
                     age: 33
                 })
                 return parentScope.ready;
@@ -154,29 +136,39 @@
 
                 it("should create a child scope from " + arg.type, function () {
                     var childScope = parentScope.new(arg.value);
-                    return childScope.ready.then(function () {
-                        should.exist(childScope);
-                        childScope.should.have.property('name', 'test');
-                        childScope.should.have.property('age', 1);
-                        childScope.should.have.property('childName', 'child');
-                        (childScope.parent === parentScope).should.be.true;
-                        (childScope.__proto__ === parentScope).should.be.true;
+                    expect(childScope).to.be.ok;
+                    expect(childScope).to.have.property('parentName', 'test');
+                    expect(childScope).to.have.property('age', 33);
+                    return childScope.ready.then(function (childScope) {
+                        expect(childScope).to.have.property('parentName', 'test');
+                        expect(childScope).to.be.ok;
+                        expect(childScope).to.have.property('age', 1);
+                        expect(childScope).to.have.property('childName', 'child');
+                        expect(childScope.parent).to.equal(parentScope);
+                        expect(childScope.__proto__).to.equal(parentScope);
                     });
                 });
 
 
                 it("should set a child's scope with " + arg.type, function () {
                     var childScope = parentScope.new(arg.value);
-                    return childScope.ready.then(function () {
-                        should.exist(childScope);
-                        childScope.should.have.property('name', 'test');
-                        childScope.should.have.property('age', 1);
-                        childScope.should.have.property('childName', 'child');
-                        (childScope.parent === parentScope).should.be.true;
-                        (childScope.__proto__ === parentScope).should.be.true;
-                        return childScope.set(arg.set).then(function () {
-                            childScope.should.have.property('age', 3);
-                            childScope.should.have.property('childSetName', 'setChild');
+                    expect(childScope).to.be.ok;
+                    expect(childScope).to.have.property('parentName', 'test');
+                    expect(childScope).to.have.property('age', 33);
+                    return childScope.ready.then(function (childScope) {
+                        expect(childScope).to.have.property('parentName', 'test');
+                        expect(childScope).to.be.ok;
+                        expect(childScope).to.have.property('age', 1);
+                        expect(childScope).to.have.property('childName', 'child');
+                        expect(childScope.parent).to.equal(parentScope);
+                        expect(childScope.__proto__).to.equal(parentScope);
+                        return childScope.set(arg.set).then(function (childScope) {
+                            expect(childScope).to.have.property('parentName', 'test');
+                            expect(childScope).to.have.property('childSetName', 'setChild');
+                            expect(childScope).to.have.property('age', 3);
+                            expect(childScope).to.not.have.ownProperty('childName');
+                            expect(childScope.parent).to.equal(parentScope);
+                            expect(childScope.__proto__).to.equal(parentScope);
                         });
                     });
                 });
@@ -186,4 +178,4 @@
         });
     });
 
-}(require('../index').Scope, require('should')));
+}(require('../index').Scope));

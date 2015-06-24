@@ -1,12 +1,14 @@
 /**
  * Created by jhorlin.dearmas on 12/25/2014.
  */
-(function(expressComposer, should){
+(function(expressComposer){
+    var chai = require('chai'),
+        expect = chai.expect;
     describe("test conductor mixin", function(){
         describe("test the conductor app mixin", function(){
             it("should require an instance of express app with", function(){
                 var app = expressComposer();
-                should.exist(app);
+                expect(app).to.be.ok;
             });
         });
 
@@ -17,36 +19,36 @@
            });
 
             it("app should contain a conduct method", function(){
-                should(app.conduct).be.a.Function;
+                expect(app.conduct).to.be.an.instanceOf(Function);
             });
 
             it("Router should contain a conduct method", function(){
                var router = new expressComposer.Router();
-                should.exist(router);
-                should(router.conduct).be.a.Function;
+                expect(router).to.be.ok;
+                expect(router.conduct).to.be.an.instanceOf(Function);
             });
 
             it("Route should contain a conduct method", function(){
                 var router = new expressComposer.Router(),
                     route = router.route('/');
-                should.exist(route);
-                should(route.conduct).be.a.Function;
+                expect(route).to.be.ok;
+                expect(route.conduct).to.be.an.instanceOf(Function)
             });
 
             it("expressComposer should contain a Scope class", function(){
-                should.exist(expressComposer.Scope);
+                expect(expressComposer.Scope).to.be.ok;
             });
 
             it("expressComposer should contain a Validator class", function(){
-                should.exist(expressComposer.Validator);
+                expect(expressComposer.Validator).to.be.ok;
             });
 
             it("expressComposer should contain a composer function", function(){
-                should.exist(expressComposer.composer);
+                expect(expressComposer.composer).to.be.ok;
             });
         });
 
     });
 
 
-}(require('./../index'), require('should')));
+}(require('./../index')));
