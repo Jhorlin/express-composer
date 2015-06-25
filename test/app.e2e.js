@@ -51,8 +51,8 @@
                     it("should respond with " + message, function () {
                         return request
                             .get([path.router, path.route].join('') || '/')
+                            .expect(200)
                             .then(function (res) {
-                                expect(res).to.have.status(200);
                                 expect(res.text).to.equal(message);
                             });
                     });
@@ -79,14 +79,14 @@
                     beforeEach(function () {
                         app = expressComposer();
                         app.conduct(score);
-                        request = chai.request(app);
+                        request = supertest(app);
                     });
 
                     it("should respond with scope variable message: " + message, function () {
                         return request
                             .get([path.router, path.route].join('') || '/')
+                            .expect(200)
                             .then(function (res) {
-                                expect(res).to.have.status(200);
                                 expect(res.text).to.equal(message);
                             });
                     });
@@ -115,25 +115,23 @@
                                 }]
                             }]
                         };
-                    before(function () {
+                    beforeEach(function () {
                         app = expressComposer();
                         app.conduct(score);
-                        request = chai.request(app);
+                        request = supertest(app);
                     });
 
                     it("should respond with error when validation schema does not match", function () {
                         return request
                             .get(([path.router, path.route].join('') || '/') + '?noMatch=test')
-                            .then(function (res) {
-                               expect(res).to.have.status(400);
-                            });
+                            .expect(400);
                     });
 
                     it("should respond with " + message, function () {
                         return request
                             .get(([path.router, path.route].join('') || '/') + '?key=test')
+                            .expect(200)
                             .then(function (res) {
-                                expect(res).to.have.status(200);
                                 expect(res.text).to.equal(message);
                             });
                     });
@@ -158,18 +156,16 @@
                                 }]
                             }]
                         };
-                    before(function () {
+                    beforeEach(function () {
                         app = expressComposer();
                         app.conduct(score);
-                        request = chai.request(app);
+                        request = supertest(app);
                     });
 
                     it("should return the error thrown", function () {
                         return request
                             .get([path.router, path.route].join('') || '/')
-                            .then(function (res) {
-                                expect(res).to.have.status(501);
-                            });
+                            .expect(501)
                     });
 
                 });
@@ -195,18 +191,18 @@
                                 }
                             ]
                         };
-                    before(function () {
+                    beforeEach(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
                         app.conduct(score);
-                        request = chai.request(app);
+                        request = supertest(app);
                     });
 
                     it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
+                            .expect(501)
                             .then(function (res) {
-                                expect(res).to.have.status(501);
                                 expect(res.text).to.equal(message);
                             });
                     });
@@ -231,19 +227,19 @@
                                 }
                             ]
                         };
-                    before(function () {
+                    beforeEach(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
                         app.conduct(score);
-                        request = chai.request(app);
+                        request = supertest(app);
                     });
 
 
                     it(util.format("should return the message %s", message), function () {
                         request
                             .get([path.router, path.route].join('') || '/')
+                            .expect(200)
                             .then(function (res) {
-                                expect(res).to.have.status(200);
                                 expect(res.text).to.equal(message);
                             });
                     });
@@ -269,18 +265,18 @@
                                 errorHandlers: [handlers.error()[handlerType]]
                             }]
                         };
-                    before(function () {
+                    beforeEach(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
                         app.conduct(score);
-                        request = chai.request(app);
+                        request = supertest(app);
                     });
 
                     it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
+                            .expect(501)
                             .then(function (res) {
-                                expect(res).to.have.status(501);
                                 expect(res.text).to.equal(message);
                             });
                     });
@@ -306,19 +302,19 @@
                                 }]
                             }]
                         };
-                    before(function () {
+                    beforeEach(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
                         app.conduct(score);
-                        request = chai.request(app);
+                        request = supertest(app);
                     });
 
 
                     it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
+                            .expect(501)
                             .then(function (res) {
-                                expect(res).to.have.status(501);
                                 expect(res).to.have.property('text', message);
                             });
                     });
@@ -344,18 +340,18 @@
                                 }]
                             }]
                         };
-                    before(function () {
+                    beforeEach(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
                         app.conduct(score);
-                        request = chai.request(app);
+                        request = supertest(app);
                     });
 
                     it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
+                            .expect(200)
                             .then(function (res) {
-                                expect(res).to.have.status(200);
                                 expect(res).to.have.property('text', message);
                             });
                     });
@@ -381,18 +377,18 @@
                             }]
                         };
 
-                    before(function () {
+                    beforeEach(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
                         app.conduct(score);
-                        request = chai.request(app);
+                        request = supertest(app);
                     });
 
                     it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
+                            .expect(200)
                             .then(function (res) {
-                                expect(res).to.have.status(200);
                                 expect(res).to.have.property('text', message);
                             });
                     });
@@ -420,18 +416,18 @@
                                 }
                             ]
                         };
-                    before(function () {
+                    beforeEach(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
                         app.conduct(score);
-                        request = chai.request(app);
+                        request = supertest(app);
                     });
 
                     it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
+                            .expect(200)
                             .then(function (res) {
-                                expect(res).to.have.status(200);
                                 expect(res).to.have.property('text', message);
                             });
                     });
@@ -458,19 +454,19 @@
                                 }
                             ]
                         };
-                    before(function () {
+                    beforeEach(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
                         app.conduct(score);
-                        request = chai.request(app);
+                        request = supertest(app);
                     });
 
 
                     it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
+                            .expect(200)
                             .then(function (res) {
-                                expect(res).to.have.status(200);
                                 expect(res).to.have.property('text', message);
                             });
                     });
@@ -501,22 +497,53 @@
                                 }
                             ]
                         };
-                    before(function () {
+                    beforeEach(function () {
                         app = expressComposer();
                         expect(app).to.be.ok;
                         app.conduct(score);
-                        request = chai.request(app);
+                        request = supertest(app);
                     });
 
                     it("should return the error thrown", function () {
                         request
                             .get([path.router, path.route].join('') || '/')
+                            .expect(200)
                             .then(function (res) {
-                                expect(res).to.have.status(200);
                                 expect(res).to.have.property('text', message);
                             });
                     });
                 });
+            });
+        });
+
+        describe("test parameters in route", function(){
+           var app,
+               request;
+            beforeEach(function(){
+                app = expressComposer();
+                request = supertest(app);
+            });
+
+            it("should return router param 'routerTest' concatenated with router param 'routeTest' separated by a space", function(){
+               app.conduct({
+                   routers:{
+                       path:'/router/:router',
+                       routes:{
+                           path:'/route/:route',
+                           methods:{
+                               get:{
+                                   handlers: require('./modules/handlers/concatParams')
+                               }
+                           }
+                       }
+                   }
+               });
+
+                return request.get('/router/routerTest/route/routeTest')
+                    .expect(200)
+                    .then(function(res){
+                        expect(res.text).to.equal('routerTest routeTest');
+                    });
             });
         });
     });

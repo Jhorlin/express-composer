@@ -79,8 +79,8 @@
                 app.conduct(score);
                 return request
                     .get('/')
+                    .expect(200)
                     .then(function (res) {
-                        expect(res).to.have.status(200);
                         expect(res.text).to.equal('Hello World!');
                     });
             });
@@ -196,8 +196,8 @@
                 app.conduct(score);
                 return request
                     .get('/?key=123')
+                    .expect(200)
                     .then(function (res) {
-                        expect(res).to.have.status(200);
                         expect(res.text).to.equal('Hello World!');
                     });
             });
@@ -219,9 +219,7 @@
                 app.conduct(score);
                 return request
                     .get('/')
-                    .then(function (res) {
-                        expect(res).to.have.status(400);
-                    });
+                    .expect(400);
             });
 
             it("should create a score and compose an app with a router error handler", function () {
@@ -241,9 +239,7 @@
                 app.conduct(score);
                 return request
                     .get('/')
-                    .then(function (res) {
-                        expect(res).to.have.status(501);
-                    });
+                    .expect(501);
             });
 
             it("should create a score and compose an app with a route error handler", function () {
@@ -263,9 +259,7 @@
                 app.conduct(score);
                 return request
                     .get('/')
-                    .then(function (res) {
-                        expect(res).to.have.status(501);
-                    });
+                    .expect(501);
             });
 
             it("should create a score and compose an app with a method error handler", function () {
@@ -285,8 +279,8 @@
                 app.conduct(score);
                 return request
                     .get('/')
+                    .expect(501)
                     .then(function (res) {
-                        expect(res).to.have.status(501);
                         expect(res.text).to.equal('oops...');
                     });
             });
@@ -309,8 +303,8 @@
                 app.conduct(score);
                 return request
                     .get('/')
+                    .expect(501)
                     .then(function (res) {
-                        expect(res).to.have.status(501);
                         expect(res.text).to.equal('oops...');
                     });
             });
