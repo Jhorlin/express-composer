@@ -3,9 +3,10 @@
  */
 (function(module, joi){
     "use strict";
-    module.exports = joi.object({
+    var schema = joi.object({
         username:joi.string().required(),
         password:joi.string().required(),
         accept:joi.boolean().required()
     });
-}(module, require('joi')))
+    module.exports = schema.validate.bind(schema);
+}(module, require('joi')));

@@ -1,9 +1,13 @@
 /**
  * Created by jhorlin.dearmas on 4/21/2015.
  */
-(function(module, joi){
+(function(module){
     "use strict";
-    module.exports = joi.object({
+    debugger;
+    var joi = require('joi');
+    debugger;
+    var schema = joi.object({
         key:joi.string().required()
-    });
-}(module, require('joi')))
+    })
+    module.exports = schema.validate.bind(schema);
+}(module))

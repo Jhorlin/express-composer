@@ -98,8 +98,8 @@
                     var app,
                         request,
                         message = "hello world",
-                        validator = joi.object({
-                            key: joi.any().required()
+                        schema = joi.object({
+                            key: joi.string().required()
                         }),
                         score = {
                             routers: [{
@@ -108,7 +108,7 @@
                                     path: path.route,
                                     methods: {
                                         get: {
-                                            validator: validator,
+                                            validator: schema.validate.bind(schema),
                                             handlers: [handlers.respond(message)[handlerType]]
                                         }
                                     }
