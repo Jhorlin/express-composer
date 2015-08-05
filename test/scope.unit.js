@@ -19,12 +19,6 @@
                 expect(scope).to.be.ok;
             });
 
-            it("should throw an error if not ready", function(){
-               var promise = new Promise(function(resolve, reject){}),
-                   scope = new Scope(promise);
-                expect(scope.unset()).to.throw('scope is not ready');
-            });
-
             var argument = {
                     name: 'test',
                     age: 33
