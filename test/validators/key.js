@@ -3,9 +3,7 @@
  */
 (function(module){
     "use strict";
-    debugger;
     var joi = require('joi');
-    debugger;
     var schema = joi.object({
         key:joi.string().required()
     })
