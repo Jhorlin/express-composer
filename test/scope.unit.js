@@ -19,6 +19,12 @@
                 expect(scope).to.be.ok;
             });
 
+            it("should throw an error if not ready", function(){
+               var promise = new Promise(function(resolve, reject){}),
+                   scope = new Scope(promise);
+                expect(scope.unset()).to.throw('scope is not ready');
+            });
+
             var argument = {
                     name: 'test',
                     age: 33
@@ -54,25 +60,6 @@
                         expect(scope).to.be.ok
                         expect(scope).to.have.property('name', 'test');
                         expect(scope).to.have.property('age', 33);
-                    });
-                });
-
-                it("should set a parent scope extended from " + arg.type, function () {
-                    var scope = new Scope(arg.value);
-                    expect(scope).to.be.ok
-                    return scope.ready.then(function (scope) {
-                        expect(scope).to.be.ok
-                        expect(scope).to.have.property('name', 'test');
-                        expect(scope).to.have.property('age', 33);
-                        scope.set({
-                            setName: 'testSet',
-                            age: 19
-                        }).then(function (scope) {
-                            expect(scope).to.be.ok
-                            expect(scope).to.have.property('setName', 'testSet');
-                            expect(scope).to.have.property('age', 19);
-                            expect(scope).to.not.have.property('name');
-                        });
                     });
                 });
 
@@ -146,30 +133,6 @@
                         expect(childScope).to.have.property('childName', 'child');
                         expect(childScope.parent).to.equal(parentScope);
                         expect(childScope.__proto__).to.equal(parentScope);
-                    });
-                });
-
-
-                it("should set a child's scope with " + arg.type, function () {
-                    var childScope = parentScope.new(arg.value);
-                    expect(childScope).to.be.ok;
-                    expect(childScope).to.have.property('parentName', 'test');
-                    expect(childScope).to.have.property('age', 33);
-                    return childScope.ready.then(function (childScope) {
-                        expect(childScope).to.have.property('parentName', 'test');
-                        expect(childScope).to.be.ok;
-                        expect(childScope).to.have.property('age', 1);
-                        expect(childScope).to.have.property('childName', 'child');
-                        expect(childScope.parent).to.equal(parentScope);
-                        expect(childScope.__proto__).to.equal(parentScope);
-                        return childScope.set(arg.set).then(function (childScope) {
-                            expect(childScope).to.have.property('parentName', 'test');
-                            expect(childScope).to.have.property('childSetName', 'setChild');
-                            expect(childScope).to.have.property('age', 3);
-                            expect(childScope).to.not.have.ownProperty('childName');
-                            expect(childScope.parent).to.equal(parentScope);
-                            expect(childScope.__proto__).to.equal(parentScope);
-                        });
                     });
                 });
 
