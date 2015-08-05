@@ -309,6 +309,31 @@
                     });
             });
 
+
+            it("should create a score and compose an app with an app that message 'Hello World!'", function () {
+                var scoreConfig = {
+                    apps: [{
+                        routers: [{
+                            routes: [{
+                                methods: {
+                                    get: {
+                                        handlers: ['test/modules/handlers/helloWorld']
+                                    }
+                                }
+                            }]
+                        }]
+                    }]
+                };
+                var score = scoreFactory.composeAppSync(scoreConfig);
+                app.conduct(score);
+                return request
+                    .get('/')
+                    .expect(200)
+                    .then(function (res) {
+                        expect(res.text).to.equal('Hello World!');
+                    });
+            });
+
         });
 
         describe("test default scoreFactory asyncResolver", function () {
@@ -592,7 +617,7 @@
                         }]
                     }]
                 };
-                return scoreFactory.composeApp(scoreConfig).then(function(score){
+                return scoreFactory.composeApp(scoreConfig).then(function (score) {
                     app.conduct(score);
                     return request
                         .get('/')
@@ -602,6 +627,32 @@
                         });
                 });
 
+            });
+
+            it("should create a score and compose an app with an app that message 'Hello World!'", function () {
+                var scoreConfig = {
+                    apps: [{
+                        routers: [{
+                            routes: [{
+                                methods: {
+                                    get: {
+                                        handlers: ['test/modules/handlers/helloWorld']
+                                    }
+                                }
+                            }]
+                        }]
+                    }]
+                };
+               return scoreFactory.composeApp(scoreConfig)
+                   .then(function(score){
+                       app.conduct(score);
+                       return request
+                           .get('/')
+                           .expect(200)
+                           .then(function (res) {
+                               expect(res.text).to.equal('Hello World!');
+                           });
+                   })
             });
 
         });
