@@ -1345,13 +1345,52 @@
                 describe("array scope", function(){
                     var score = {
                         routers:[{
-
+                            preHandlers: [handlers.throwError(message).promise],
+                            errorHandlers: [function(err, req, res){
+                                return err;
+                            },handlers.error().promise]
                         }]
                     }
+
+                    beforeEach(function(){
+                       app.conduct(score);
+                    })
+
+                    it("should respond with an error message of " + message, function(){
+                        return request
+                            .get('/')
+                            .then(function(response){
+
+                            }, function(err){
+                                expect(err.response.text).to.equal(message);
+                            })
+                    })
                 });
 
                 describe("object scope", function(){
+                    var score = {
+                        routers:{
+                            preHandlers: [handlers.throwError(message).promise],
+                            errorHandlers: function(err, req, res){
+                                return err;
+                            }
+                        },
+                        errorHandlers:handlers.error().promise
+                    }
 
+                    beforeEach(function(){
+                        app.conduct(score);
+                    })
+
+                    it("should respond with an error message of " + message, function(){
+                        return request
+                            .get('/')
+                            .then(function(response){
+
+                            }, function(err){
+                                expect(err.response.text).to.equal(message);
+                            })
+                    })
                 });
             })
         });
