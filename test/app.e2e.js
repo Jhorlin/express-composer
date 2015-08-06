@@ -1033,6 +1033,9 @@
                                         handlers: require('./modules/handlers/concatParams')
                                     }
                                 }
+                            },
+                            options:{
+                                mergeParams: true
                             }
                         }
                     });
