@@ -25,159 +25,467 @@
                 paths.forEach(function (path) {
                     describe(util.format("test that we can create a simple hello world route with handlerType:%s routerPath:%s routePath:%s",
                         handlerType, path.router || 'Default', path.route || 'Default'), function () {
-                        var app,
-                            request,
-                            message = "hello world",
-                            score = {
-                                routers: [{
-                                    path: path.router,
-                                    routes: [{
-                                        path: path.route,
-                                        methods: {
-                                            get: {
-                                                handlers: [handlers.respond(message)[handlerType]]
-                                            }
-                                        }
-                                    }]
-                                }]
-                            };
 
-                        beforeEach(function () {
-                            app = expressComposer();
-                            app.conduct(score);
-                            request = supertest(app);
+                        describe("test score created with object", function () {
+                            var app,
+                                request,
+                                message = "hello world",
+                                score = {
+                                    routers: [{
+                                        path: path.router,
+                                        routes: [{
+                                            path: path.route,
+                                            methods: {
+                                                get: {
+                                                    handlers: [handlers.respond(message)[handlerType]]
+                                                }
+                                            }
+                                        }]
+                                    }]
+                                };
+
+                            beforeEach(function () {
+                                app = expressComposer();
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should respond with " + message, function () {
+                                return request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res.text).to.equal(message);
+                                    });
+                            });
                         });
 
-                        it("should respond with " + message, function () {
-                            return request
-                                .get([path.router, path.route].join('') || '/')
-                                .expect(200)
-                                .then(function (res) {
-                                    expect(res.text).to.equal(message);
-                                });
+                        describe("test score created with array", function () {
+                            var app,
+                                request,
+                                message = "hello world",
+                                score = {
+                                    routers: {
+                                        path: path.router,
+                                        routes: {
+                                            path: path.route,
+                                            methods: {
+                                                get: {
+                                                    handlers: handlers.respond(message)[handlerType]
+                                                }
+                                            }
+                                        }
+                                    }
+                                };
+
+                            beforeEach(function () {
+                                app = expressComposer();
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should respond with " + message, function () {
+                                return request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res.text).to.equal(message);
+                                    });
+                            });
                         });
                     });
 
                     describe(util.format("test route has access to scope with handlerType:%s routerPath:%s routePath:%s",
                         handlerType, path.router || 'Default', path.route || 'Default'), function () {
-                        var app,
-                            request,
-                            message = "hello world",
-                            score = {
-                                routers: [{
-                                    path: path.router,
-                                    routes: [{
-                                        path: path.route,
-                                        methods: {
-                                            get: {
-                                                handlers: [handlers.setScope('message', message)[handlerType], handlers.respondScope('message')[handlerType]]
+
+
+                        describe("test score created with array", function () {
+                            var app,
+                                request,
+                                message = "hello world",
+                                score = {
+                                    routers: [{
+                                        path: path.router,
+                                        routes: [{
+                                            path: path.route,
+                                            methods: {
+                                                get: {
+                                                    handlers: [handlers.setScope('message', message)[handlerType], handlers.respondScope('message')[handlerType]]
+                                                }
+                                            }
+                                        }]
+                                    }]
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should respond with scope variable message: " + message, function () {
+                                return request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res.text).to.equal(message);
+                                    });
+                            });
+                        })
+
+                        describe("test score created with object", function () {
+                            var app,
+                                request,
+                                message = "hello world",
+                                score = {
+                                    routers: {
+                                        path: path.router,
+                                        routes: {
+                                            path: path.route,
+                                            methods: {
+                                                get: {
+                                                    handlers: [handlers.setScope('message', message)[handlerType], handlers.respondScope('message')[handlerType]]
+                                                }
                                             }
                                         }
-                                    }]
-                                }]
-                            };
-                        beforeEach(function () {
-                            app = expressComposer();
-                            app.conduct(score);
-                            request = supertest(app);
-                        });
+                                    }
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
 
-                        it("should respond with scope variable message: " + message, function () {
-                            return request
-                                .get([path.router, path.route].join('') || '/')
-                                .expect(200)
-                                .then(function (res) {
-                                    expect(res.text).to.equal(message);
-                                });
-                        });
+                            it("should respond with scope variable message: " + message, function () {
+                                return request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res.text).to.equal(message);
+                                    });
+                            });
+                        })
 
                     });
 
                     describe(util.format("test route validator for handlerType:%s routerPath:%s routePath:%s",
                         handlerType, path.router || 'Default', path.route || 'Default'), function () {
-                        var app,
-                            request,
-                            message = "hello world",
-                            schema = joi.object({
-                                key: joi.string().required()
-                            }),
-                            score = {
-                                routers: [{
-                                    path: path.router,
-                                    routes: [{
-                                        path: path.route,
-                                        methods: {
-                                            get: {
-                                                validator: schema.validate.bind(schema),
-                                                handlers: [handlers.respond(message)[handlerType]]
+
+
+                        describe("test score created with array", function () {
+                            var app,
+                                request,
+                                message = "hello world",
+                                schema = joi.object({
+                                    key: joi.string().required()
+                                }),
+                                score = {
+                                    routers: [{
+                                        path: path.router,
+                                        routes: [{
+                                            path: path.route,
+                                            methods: {
+                                                get: {
+                                                    validator: schema.validate.bind(schema),
+                                                    handlers: [handlers.respond(message)[handlerType]]
+                                                }
+                                            }
+                                        }]
+                                    }]
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should respond with error when validation schema does not match", function () {
+                                return request
+                                    .get(([path.router, path.route].join('') || '/') + '?noMatch=test')
+                                    .expect(400);
+                            });
+
+                            it("should respond with " + message, function () {
+                                return request
+                                    .get(([path.router, path.route].join('') || '/') + '?key=test')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res.text).to.equal(message);
+                                    });
+                            });
+                        });
+
+                        describe("test score created with object", function () {
+                            var app,
+                                request,
+                                message = "hello world",
+                                schema = joi.object({
+                                    key: joi.string().required()
+                                }),
+                                score = {
+                                    routers: {
+                                        path: path.router,
+                                        routes: {
+                                            path: path.route,
+                                            methods: {
+                                                get: {
+                                                    validator: schema.validate.bind(schema),
+                                                    handlers: handlers.respond(message)[handlerType]
+                                                }
                                             }
                                         }
-                                    }]
-                                }]
-                            };
-                        beforeEach(function () {
-                            app = expressComposer();
-                            app.conduct(score);
-                            request = supertest(app);
+                                    }
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should respond with error when validation schema does not match", function () {
+                                return request
+                                    .get(([path.router, path.route].join('') || '/') + '?noMatch=test')
+                                    .expect(400);
+                            });
+
+                            it("should respond with " + message, function () {
+                                return request
+                                    .get(([path.router, path.route].join('') || '/') + '?key=test')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res.text).to.equal(message);
+                                    });
+                            });
                         });
 
-                        it("should respond with error when validation schema does not match", function () {
-                            return request
-                                .get(([path.router, path.route].join('') || '/') + '?noMatch=test')
-                                .expect(400);
-                        });
-
-                        it("should respond with " + message, function () {
-                            return request
-                                .get(([path.router, path.route].join('') || '/') + '?key=test')
-                                .expect(200)
-                                .then(function (res) {
-                                    expect(res.text).to.equal(message);
-                                });
-                        });
                     });
 
                     describe(util.format("test method error for handlerType:%s routerPath:%s routerPath:%s",
                         handlerType, path.router || 'Default', path.route || 'Default'), function () {
-                        var app,
-                            message = "oops",
-                            request,
-                            score = {
-                                routers: [{
-                                    path: path.router,
-                                    routes: [{
-                                        path: path.route,
-                                        methods: {
-                                            get: {
-                                                handlers: [handlers.throwError(message)[handlerType]],
-                                                errorHandlers: [handlers.error()[handlerType]]
+
+                        describe("test score created with array", function () {
+                            var app,
+                                message = "oops",
+                                request,
+                                score = {
+                                    routers: [{
+                                        path: path.router,
+                                        routes: [{
+                                            path: path.route,
+                                            methods: {
+                                                get: {
+                                                    handlers: [handlers.throwError(message)[handlerType]],
+                                                    errorHandlers: [handlers.error()[handlerType]]
+                                                }
+                                            }
+                                        }]
+                                    }]
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should return the error thrown", function () {
+                                return request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(501)
+                            });
+                        });
+                        describe("test score created with object", function () {
+                            var app,
+                                message = "oops",
+                                request,
+                                score = {
+                                    routers: {
+                                        path: path.router,
+                                        routes: {
+                                            path: path.route,
+                                            methods: {
+                                                get: {
+                                                    handlers: handlers.throwError(message)[handlerType],
+                                                    errorHandlers: handlers.error()[handlerType]
+                                                }
                                             }
                                         }
-                                    }]
-                                }]
-                            };
-                        beforeEach(function () {
-                            app = expressComposer();
-                            app.conduct(score);
-                            request = supertest(app);
-                        });
+                                    }
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
 
-                        it("should return the error thrown", function () {
-                            return request
-                                .get([path.router, path.route].join('') || '/')
-                                .expect(501)
+                            it("should return the error thrown", function () {
+                                return request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(501)
+                            });
                         });
 
                     });
 
                     describe(util.format("test route error for handlerType:%s routerPath:%s routePath:%s",
                         handlerType, path.router || 'Default', path.route || 'Default'), function () {
-                        var app,
-                            message = "oops",
-                            request,
-                            score = {
-                                routers: [
-                                    {
+
+                        describe("test score created with array", function () {
+                            var app,
+                                message = "oops",
+                                request,
+                                score = {
+                                    routers: [
+                                        {
+                                            path: path.router,
+                                            routes: [{
+                                                path: path.route,
+                                                methods: {
+                                                    get: {
+                                                        handlers: [handlers.throwError(message)[handlerType]]
+                                                    }
+                                                },
+                                                errorHandlers: [handlers.error()[handlerType]]
+                                            }]
+                                        }
+                                    ]
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(501)
+                                    .then(function (res) {
+                                        expect(res.text).to.equal(message);
+                                    });
+                            });
+                        });
+                        describe("test score created with object", function () {
+                            var app,
+                                message = "oops",
+                                request,
+                                score = {
+                                    routers: {
+                                        path: path.router,
+                                        routes: {
+                                            path: path.route,
+                                            methods: {
+                                                get: {
+                                                    handlers: handlers.throwError(message)[handlerType]
+                                                }
+                                            },
+                                            errorHandlers: handlers.error()[handlerType]
+                                        }
+                                    }
+
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(501)
+                                    .then(function (res) {
+                                        expect(res.text).to.equal(message);
+                                    });
+                            });
+                        });
+
+                    });
+
+                    describe(util.format("test route method array handler for handlerType:%s routerPath:%s routePath:%s",
+                        handlerType, path.router || 'Default', path.route || 'Default'), function () {
+
+
+                        describe("test score created with array", function () {
+                            var app,
+                                message = "hello world",
+                                request,
+                                score = {
+                                    routers: [
+                                        {
+                                            path: path.router,
+                                            routes: [{
+                                                path: path.route,
+                                                methods: {
+                                                    get: [handlers.respond(message)[handlerType]]
+                                                }
+                                            }]
+                                        }
+                                    ]
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+
+                            it(util.format("should return the message %s", message), function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res.text).to.equal(message);
+                                    });
+                            });
+                        });
+                        describe("test score created with object", function () {
+                            var app,
+                                message = "hello world",
+                                request,
+                                score = {
+                                    routers: {
+                                        path: path.router,
+                                        routes: {
+                                            path: path.route,
+                                            methods: {
+                                                get: handlers.respond(message)[handlerType]
+                                            }
+                                        }
+                                    }
+
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+
+                            it(util.format("should return the message %s", message), function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res.text).to.equal(message);
+                                    });
+                            });
+                        });
+
+                    });
+
+                    describe(util.format("test router error for handlerType:%s routerPath:%s routePath:%s",
+                        handlerType, path.router || 'Default', path.route || 'Default'), function () {
+
+
+                        describe("test score created with array", function () {
+                            var app,
+                                request,
+                                message = "oops",
+                                score = {
+                                    routers: [{
                                         path: path.router,
                                         routes: [{
                                             path: path.route,
@@ -185,306 +493,495 @@
                                                 get: {
                                                     handlers: [handlers.throwError(message)[handlerType]]
                                                 }
-                                            },
-                                            errorHandlers: [handlers.error()[handlerType]]
-                                        }]
-                                    }
-                                ]
-                            };
-                        beforeEach(function () {
-                            app = expressComposer();
-                            expect(app).to.be.ok;
-                            app.conduct(score);
-                            request = supertest(app);
+                                            }
+                                        }],
+                                        errorHandlers: [handlers.error()[handlerType]]
+                                    }]
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(501)
+                                    .then(function (res) {
+                                        expect(res.text).to.equal(message);
+                                    });
+                            });
                         });
-
-                        it("should return the error thrown", function () {
-                            request
-                                .get([path.router, path.route].join('') || '/')
-                                .expect(501)
-                                .then(function (res) {
-                                    expect(res.text).to.equal(message);
-                                });
-                        });
-
-                    });
-
-                    describe(util.format("test route method array handler for handlerType:%s routerPath:%s routePath:%s",
-                        handlerType, path.router || 'Default', path.route || 'Default'), function () {
-                        var app,
-                            message = "hello world",
-                            request,
-                            score = {
-                                routers: [
-                                    {
+                        describe("test score created with object", function () {
+                            var app,
+                                request,
+                                message = "oops",
+                                score = {
+                                    routers: {
                                         path: path.router,
-                                        routes: [{
+                                        routes: {
                                             path: path.route,
                                             methods: {
-                                                get: [handlers.respond(message)[handlerType]]
+                                                get: {
+                                                    handlers: handlers.throwError(message)[handlerType]
+                                                }
                                             }
-                                        }]
+                                        },
+                                        errorHandlers: handlers.error()[handlerType]
                                     }
-                                ]
-                            };
-                        beforeEach(function () {
-                            app = expressComposer();
-                            expect(app).to.be.ok;
-                            app.conduct(score);
-                            request = supertest(app);
-                        });
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
 
-
-                        it(util.format("should return the message %s", message), function () {
-                            request
-                                .get([path.router, path.route].join('') || '/')
-                                .expect(200)
-                                .then(function (res) {
-                                    expect(res.text).to.equal(message);
-                                });
-                        });
-
-                    });
-
-                    describe(util.format("test router error for handlerType:%s routerPath:%s routePath:%s",
-                        handlerType, path.router || 'Default', path.route || 'Default'), function () {
-                        var app,
-                            request,
-                            message = "oops",
-                            score = {
-                                routers: [{
-                                    path: path.router,
-                                    routes: [{
-                                        path: path.route,
-                                        methods: {
-                                            get: {
-                                                handlers: [handlers.throwError(message)[handlerType]]
-                                            }
-                                        }
-                                    }],
-                                    errorHandlers: [handlers.error()[handlerType]]
-                                }]
-                            };
-                        beforeEach(function () {
-                            app = expressComposer();
-                            expect(app).to.be.ok;
-                            app.conduct(score);
-                            request = supertest(app);
-                        });
-
-                        it("should return the error thrown", function () {
-                            request
-                                .get([path.router, path.route].join('') || '/')
-                                .expect(501)
-                                .then(function (res) {
-                                    expect(res.text).to.equal(message);
-                                });
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(501)
+                                    .then(function (res) {
+                                        expect(res.text).to.equal(message);
+                                    });
+                            });
                         });
 
                     });
 
                     describe(util.format("test app error for handlerType:%s routerPath:%s routePath:%s",
                         handlerType, path.router || 'Default', path.route || 'Default'), function () {
-                        var app,
-                            message = "oops",
-                            request,
-                            score = {
-                                errorHandlers: [handlers.error()[handlerType]],
-                                routers: [{
-                                    path: path.router,
-                                    routes: [{
-                                        path: path.route,
-                                        methods: {
-                                            get: {
-                                                handlers: [handlers.throwError(message)[handlerType]]
+
+
+                        describe("test score created with array", function () {
+                            var app,
+                                message = "oops",
+                                request,
+                                score = {
+                                    errorHandlers: [handlers.error()[handlerType]],
+                                    routers: [{
+                                        path: path.router,
+                                        routes: [{
+                                            path: path.route,
+                                            methods: {
+                                                get: {
+                                                    handlers: [handlers.throwError(message)[handlerType]]
+                                                }
+                                            }
+                                        }]
+                                    }]
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(501)
+                                    .then(function (res) {
+                                        expect(res).to.have.property('text', message);
+                                    });
+                            });
+                        });
+                        describe("test score created with object", function () {
+                            var app,
+                                message = "oops",
+                                request,
+                                score = {
+                                    errorHandlers: handlers.error()[handlerType],
+                                    routers: {
+                                        path: path.router,
+                                        routes: {
+                                            path: path.route,
+                                            methods: {
+                                                get: {
+                                                    handlers: handlers.throwError(message)[handlerType]
+                                                }
                                             }
                                         }
-                                    }]
-                                }]
-                            };
-                        beforeEach(function () {
-                            app = expressComposer();
-                            expect(app).to.be.ok;
-                            app.conduct(score);
-                            request = supertest(app);
-                        });
+                                    }
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
 
 
-                        it("should return the error thrown", function () {
-                            request
-                                .get([path.router, path.route].join('') || '/')
-                                .expect(501)
-                                .then(function (res) {
-                                    expect(res).to.have.property('text', message);
-                                });
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(501)
+                                    .then(function (res) {
+                                        expect(res).to.have.property('text', message);
+                                    });
+                            });
                         });
 
                     });
 
                     describe(util.format("test method preHandler for handlerType:%s routerPath:%s routePath:%s",
                         handlerType, path.router || 'Default', path.route || 'Default'), function () {
-                        var app,
-                            message = "hello world",
-                            request,
-                            score = {
-                                routers: [{
-                                    path: path.router,
-                                    routes: [{
-                                        path: path.route,
-                                        methods: {
-                                            get: {
-                                                handlers: [handlers.respondScope("message")[handlerType]],
-                                                preHandlers: [handlers.setScope("message", message)[handlerType]]
+
+                        describe("test score created with array", function () {
+                            var app,
+                                message = "hello world",
+                                request,
+                                score = {
+                                    routers: [{
+                                        path: path.router,
+                                        routes: [{
+                                            path: path.route,
+                                            methods: {
+                                                get: {
+                                                    handlers: [handlers.respondScope("message")[handlerType]],
+                                                    preHandlers: [handlers.setScope("message", message)[handlerType]]
+                                                }
+                                            }
+                                        }]
+                                    }]
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res).to.have.property('text', message);
+                                    });
+                            });
+                        });
+                        describe("test score created with object", function () {
+                            var app,
+                                message = "hello world",
+                                request,
+                                score = {
+                                    routers: {
+                                        path: path.router,
+                                        routes: {
+                                            path: path.route,
+                                            methods: {
+                                                get: {
+                                                    handlers: handlers.respondScope("message")[handlerType],
+                                                    preHandlers: handlers.setScope("message", message)[handlerType]
+                                                }
                                             }
                                         }
-                                    }]
-                                }]
-                            };
-                        beforeEach(function () {
-                            app = expressComposer();
-                            expect(app).to.be.ok;
-                            app.conduct(score);
-                            request = supertest(app);
-                        });
+                                    }
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
 
-                        it("should return the error thrown", function () {
-                            request
-                                .get([path.router, path.route].join('') || '/')
-                                .expect(200)
-                                .then(function (res) {
-                                    expect(res).to.have.property('text', message);
-                                });
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res).to.have.property('text', message);
+                                    });
+                            });
                         });
                     });
 
                     describe(util.format("test route preHandler for handlerType:%s routerPath:%s routePath:%s",
                         handlerType, path.router || 'Default', path.route || 'Default'), function () {
-                        var app,
-                            message = "hello world",
-                            request,
-                            score = {
-                                routers: [{
-                                    path: path.router,
-                                    routes: [{
-                                        path: path.route,
-                                        methods: {
-                                            get: {
-                                                handlers: [handlers.respondScope("message")[handlerType]]
-                                            }
-                                        },
-                                        preHandlers: [handlers.setScope("message", message)[handlerType]]
+
+
+                        describe("test score created with array", function () {
+                            var app,
+                                message = "hello world",
+                                request,
+                                score = {
+                                    routers: [{
+                                        path: path.router,
+                                        routes: [{
+                                            path: path.route,
+                                            methods: {
+                                                get: {
+                                                    handlers: [handlers.respondScope("message")[handlerType]]
+                                                }
+                                            },
+                                            preHandlers: [handlers.setScope("message", message)[handlerType]]
+                                        }]
                                     }]
-                                }]
-                            };
+                                };
 
-                        beforeEach(function () {
-                            app = expressComposer();
-                            expect(app).to.be.ok;
-                            app.conduct(score);
-                            request = supertest(app);
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res).to.have.property('text', message);
+                                    });
+                            });
                         });
+                        describe("test score created with object", function () {
+                            var app,
+                                message = "hello world",
+                                request,
+                                score = {
+                                    routers: {
+                                        path: path.router,
+                                        routes: {
+                                            path: path.route,
+                                            methods: {
+                                                get: {
+                                                    handlers: handlers.respondScope("message")[handlerType]
+                                                }
+                                            },
+                                            preHandlers: handlers.setScope("message", message)[handlerType]
+                                        }
+                                    }
+                                };
 
-                        it("should return the error thrown", function () {
-                            request
-                                .get([path.router, path.route].join('') || '/')
-                                .expect(200)
-                                .then(function (res) {
-                                    expect(res).to.have.property('text', message);
-                                });
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res).to.have.property('text', message);
+                                    });
+                            });
                         });
                     });
 
                     describe(util.format("test router preHandler for handlerType:%s routerPath:%s routePath:%s",
                         handlerType, path.router || 'Default', path.route || 'Default'), function () {
-                        this.timeout(100000);
-                        var app,
-                            message = "hello world",
-                            request,
-                            score = {
-                                routers: [
-                                    {
+
+
+                        describe("test score created with array", function () {
+                            var app,
+                                message = "hello world",
+                                request,
+                                score = {
+                                    routers: [
+                                        {
+                                            path: path.router,
+                                            routes: [{
+                                                path: path.route,
+                                                methods: {
+                                                    get: {
+                                                        handlers: [handlers.respondScope("message")[handlerType]]
+                                                    }
+                                                }
+                                            }],
+                                            preHandlers: [handlers.setScope("message", message)[handlerType]]
+                                        }
+                                    ]
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res).to.have.property('text', message);
+                                    });
+                            });
+                        });
+                        describe("test score created with object", function () {
+                            var app,
+                                message = "hello world",
+                                request,
+                                score = {
+                                    routers: {
                                         path: path.router,
-                                        routes: [{
+                                        routes: {
                                             path: path.route,
                                             methods: {
                                                 get: {
-                                                    handlers: [handlers.respondScope("message")[handlerType]]
+                                                    handlers: handlers.respondScope("message")[handlerType]
                                                 }
                                             }
-                                        }],
-                                        preHandlers: [handlers.setScope("message", message)[handlerType]]
+                                        },
+                                        preHandlers: handlers.setScope("message", message)[handlerType]
                                     }
-                                ]
-                            };
-                        beforeEach(function () {
-                            app = expressComposer();
-                            expect(app).to.be.ok;
-                            app.conduct(score);
-                            request = supertest(app);
-                        });
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
 
-                        it("should return the error thrown", function () {
-                            request
-                                .get([path.router, path.route].join('') || '/')
-                                .expect(200)
-                                .then(function (res) {
-                                    expect(res).to.have.property('text', message);
-                                });
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res).to.have.property('text', message);
+                                    });
+                            });
                         });
                     });
 
                     describe(util.format("test app preHandler for handlerType:%s routerPath:%s routePath:%s",
                         handlerType, path.router || 'Default', path.route || 'Default'), function () {
-                        var app,
-                            message = "hello world",
-                            request,
-                            score = {
-                                preHandlers: [handlers.setScope("message", message)[handlerType]],
-                                routers: [
-                                    {
+
+                        describe("test score created with array", function () {
+                            var app,
+                                message = "hello world",
+                                request,
+                                score = {
+                                    preHandlers: [handlers.setScope("message", message)[handlerType]],
+                                    routers: [
+                                        {
+                                            path: path.router,
+                                            routes: [{
+                                                path: path.route,
+                                                methods: {
+                                                    get: {
+                                                        handlers: [handlers.respondScope("message")[handlerType]]
+                                                    }
+                                                }
+                                            }]
+                                        }
+                                    ]
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res).to.have.property('text', message);
+                                    });
+                            });
+                        });
+                        describe("test score created with object", function () {
+                            var app,
+                                message = "hello world",
+                                request,
+                                score = {
+                                    preHandlers: handlers.setScope("message", message)[handlerType],
+                                    routers: {
                                         path: path.router,
-                                        routes: [{
+                                        routes: {
                                             path: path.route,
                                             methods: {
                                                 get: {
-                                                    handlers: [handlers.respondScope("message")[handlerType]]
+                                                    handlers: handlers.respondScope("message")[handlerType]
                                                 }
                                             }
-                                        }]
+                                        }
                                     }
-                                ]
-                            };
-                        beforeEach(function () {
-                            app = expressComposer();
-                            expect(app).to.be.ok;
-                            app.conduct(score);
-                            request = supertest(app);
-                        });
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
 
-
-                        it("should return the error thrown", function () {
-                            request
-                                .get([path.router, path.route].join('') || '/')
-                                .expect(200)
-                                .then(function (res) {
-                                    expect(res).to.have.property('text', message);
-                                });
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res).to.have.property('text', message);
+                                    });
+                            });
                         });
                     });
 
                     describe(util.format("test router preHandler order for handlerType:%s routerPath:%s routePath:%s",
                         handlerType, path.router || 'Default', path.route || 'Default'), function () {
-                        var app,
-                            message = "hello world",
-                            request,
-                            score = {
-                                routers: [
-                                    {
+
+                        describe("test score created with array", function () {
+                            var app,
+                                message = "hello world",
+                                request,
+                                score = {
+                                    routers: [
+                                        {
+                                            path: path.router,
+                                            scope: {
+                                                items: []
+                                            },
+                                            routes: [{
+                                                path: path.route,
+
+                                                methods: {
+                                                    get: {
+                                                        handlers: [handlers.respondScope("message")[handlerType]]
+                                                    }
+                                                }
+                                            }],
+                                            preHandlers: [handlers.setScope("message", message)[handlerType]]
+                                        }
+                                    ]
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res).to.have.property('text', message);
+                                    });
+                            });
+                        });
+                        describe("test score created with object", function () {
+                            var app,
+                                message = "hello world",
+                                request,
+                                score = {
+                                    routers: {
                                         path: path.router,
                                         scope: {
                                             items: []
                                         },
-                                        routes: [{
+                                        routes: {
                                             path: path.route,
 
                                             methods: {
@@ -492,25 +989,26 @@
                                                     handlers: [handlers.respondScope("message")[handlerType]]
                                                 }
                                             }
-                                        }],
-                                        preHandlers: [handlers.setScope("message", message)[handlerType]]
+                                        },
+                                        preHandlers: handlers.setScope("message", message)[handlerType]
                                     }
-                                ]
-                            };
-                        beforeEach(function () {
-                            app = expressComposer();
-                            expect(app).to.be.ok;
-                            app.conduct(score);
-                            request = supertest(app);
-                        });
 
-                        it("should return the error thrown", function () {
-                            request
-                                .get([path.router, path.route].join('') || '/')
-                                .expect(200)
-                                .then(function (res) {
-                                    expect(res).to.have.property('text', message);
-                                });
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res).to.have.property('text', message);
+                                    });
+                            });
                         });
                     });
                 });
@@ -545,6 +1043,83 @@
                             expect(res.text).to.equal('routerTest routeTest');
                         });
                 });
+            });
+
+            describe("test nested routers", function () {
+
+                describe("test score as array", function () {
+                    var app,
+                        request,
+                        message = "hello world",
+                        score = {
+                            routers: [{
+                                routers: [{
+                                    path:'/router2',
+                                    routes: [{
+                                        methods: {
+                                            get: {
+                                                handlers: [handlers.respond(message).promise]
+                                            }
+                                        }
+                                    }]
+                                }],
+                                path: '/router1',
+                            }]
+                        };
+
+                    beforeEach(function () {
+                        app = expressComposer();
+                        app.conduct(score);
+                        request = supertest(app);
+                    });
+
+                    it("should respond with " + message, function () {
+                        return request
+                            .get('/router1/router2')
+                            .expect(200)
+                            .then(function (res) {
+                                expect(res.text).to.equal(message);
+                            });
+                    });
+                });
+
+                describe("test score as object", function () {
+                    var app,
+                        request,
+                        message = "hello world",
+                        score = {
+                            routers: {
+                                routers: {
+                                    path: '/router2',
+                                    routes: {
+                                        methods: {
+                                            get: {
+                                                handlers: handlers.respond(message).promise
+                                            }
+                                        }
+                                    }
+                                },
+                                path: '/router1',
+
+                            }
+                        };
+
+                    beforeEach(function () {
+                        app = expressComposer();
+                        app.conduct(score);
+                        request = supertest(app);
+                    });
+
+                    it("should respond with " + message, function () {
+                        return request
+                            .get('/router1/router2')
+                            .expect(200)
+                            .then(function (res) {
+                                expect(res.text).to.equal(message);
+                            });
+                    });
+                });
+
             });
 
             describe("test app level routing", function () {
@@ -582,7 +1157,7 @@
                 it("should respond with hello world with a route of '/app'", function () {
                     var score = {
                         apps: [{
-                            path:'/app',
+                            path: '/app',
                             routers: [{
                                 routes: [{
                                     methods: {
@@ -605,8 +1180,8 @@
                 it("should respond with hello world with a route of '/app' and a vhost of www.yo.com", function () {
                     var score = {
                         apps: [{
-                            path:'/app',
-                            vhost:'www.yo.com',
+                            path: '/app',
+                            vhost: 'www.yo.com',
                             routers: [{
                                 routes: [{
                                     methods: {
@@ -625,14 +1200,14 @@
                         .get('/app')
                         .set('host', 'www.yo.com')
                         .then(function (res) {
-                        expect(res).to.have.property('text', message)
-                    })
+                            expect(res).to.have.property('text', message)
+                        })
                 })
 
                 it("should respond with hello world with a vhost of www.yo.com", function () {
                     var score = {
                         apps: [{
-                            vhost:'www.yo.com',
+                            vhost: 'www.yo.com',
                             routers: [{
                                 routes: [{
                                     methods: {
