@@ -7,7 +7,7 @@
             handlers = require('./utils/handlers'),
             joi = require('joi'),
             util = require('util'),
-            chai = require('./utils/chai'),
+            chai = require('chai'),
             supertest = require('supertest-as-promised'),
             expect = chai.expect;
 
@@ -1135,106 +1135,225 @@
                     request = supertest(app);
                 });
 
-                it("should respond with hello world", function () {
-                    var score = {
-                        apps: [{
-                            routers: [{
-                                routes: [{
-                                    methods: {
-                                        get: {
-                                            handlers: [handlers.respond(message).promise]
+                describe("score array", function(){
+                    it("should respond with hello world", function () {
+                        var score = {
+                            apps: [{
+                                routers: [{
+                                    routes: [{
+                                        methods: {
+                                            get: {
+                                                handlers: [handlers.respond(message).promise]
+                                            }
                                         }
-                                    }
+                                    }]
                                 }]
-                            }]
+                            }
+                            ]
                         }
-                        ]
-                    }
 
-                    app.conduct(score);
-                    return request.get('/').then(function (res) {
-                        expect(res).to.have.property('text', message)
-                    })
-                })
-
-                it("should respond with hello world with a route of '/app'", function () {
-                    var score = {
-                        apps: [{
-                            path: '/app',
-                            routers: [{
-                                routes: [{
-                                    methods: {
-                                        get: {
-                                            handlers: [handlers.respond(message).promise]
-                                        }
-                                    }
-                                }]
-                            }]
-                        }
-                        ]
-                    }
-
-                    app.conduct(score);
-                    return request.get('/app').then(function (res) {
-                        expect(res).to.have.property('text', message)
-                    })
-                })
-
-                it("should respond with hello world with a route of '/app' and a vhost of www.yo.com", function () {
-                    var score = {
-                        apps: [{
-                            path: '/app',
-                            vhost: 'www.yo.com',
-                            routers: [{
-                                routes: [{
-                                    methods: {
-                                        get: {
-                                            handlers: [handlers.respond(message).promise]
-                                        }
-                                    }
-                                }]
-                            }]
-                        }
-                        ]
-                    }
-
-                    app.conduct(score);
-                    return request
-                        .get('/app')
-                        .set('host', 'www.yo.com')
-                        .then(function (res) {
+                        app.conduct(score);
+                        return request.get('/').then(function (res) {
                             expect(res).to.have.property('text', message)
                         })
-                })
+                    })
 
-                it("should respond with hello world with a vhost of www.yo.com", function () {
-                    var score = {
-                        apps: [{
-                            vhost: 'www.yo.com',
-                            routers: [{
-                                routes: [{
-                                    methods: {
-                                        get: {
-                                            handlers: [handlers.respond(message).promise]
+                    it("should respond with hello world with a route of '/app'", function () {
+                        var score = {
+                            apps: [{
+                                path: '/app',
+                                routers: [{
+                                    routes: [{
+                                        methods: {
+                                            get: {
+                                                handlers: [handlers.respond(message).promise]
+                                            }
                                         }
-                                    }
+                                    }]
                                 }]
-                            }]
+                            }
+                            ]
                         }
-                        ]
-                    }
 
-                    app.conduct(score);
-                    return request
-                        .get('/')
-                        .set('host', 'www.yo.com')
-                        .then(function (res) {
+                        app.conduct(score);
+                        return request.get('/app').then(function (res) {
                             expect(res).to.have.property('text', message)
                         })
-                })
+                    })
 
+                    it("should respond with hello world with a route of '/app' and a vhost of www.yo.com", function () {
+                        var score = {
+                            apps: [{
+                                path: '/app',
+                                vhost: 'www.yo.com',
+                                routers: [{
+                                    routes: [{
+                                        methods: {
+                                            get: {
+                                                handlers: [handlers.respond(message).promise]
+                                            }
+                                        }
+                                    }]
+                                }]
+                            }
+                            ]
+                        }
+
+                        app.conduct(score);
+                        return request
+                            .get('/app')
+                            .set('host', 'www.yo.com')
+                            .then(function (res) {
+                                expect(res).to.have.property('text', message)
+                            })
+                    })
+
+                    it("should respond with hello world with a vhost of www.yo.com", function () {
+                        var score = {
+                            apps: [{
+                                vhost: 'www.yo.com',
+                                routers: [{
+                                    routes: [{
+                                        methods: {
+                                            get: {
+                                                handlers: [handlers.respond(message).promise]
+                                            }
+                                        }
+                                    }]
+                                }]
+                            }
+                            ]
+                        }
+
+                        app.conduct(score);
+                        return request
+                            .get('/')
+                            .set('host', 'www.yo.com')
+                            .then(function (res) {
+                                expect(res).to.have.property('text', message)
+                            })
+                    })
+                });
+
+                describe("score object", function(){
+                    it("should respond with hello world", function () {
+                        var score = {
+                            apps: {
+                                routers: {
+                                    routes: {
+                                        methods: {
+                                            get: {
+                                                handlers: handlers.respond(message).promise
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        app.conduct(score);
+                        return request.get('/').then(function (res) {
+                            expect(res).to.have.property('text', message)
+                        })
+                    })
+
+                    it("should respond with hello world with a route of '/app'", function () {
+                        var score = {
+                            apps: {
+                                path: '/app',
+                                routers: {
+                                    routes: {
+                                        methods: {
+                                            get: {
+                                                handlers: [handlers.respond(message).promise]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        app.conduct(score);
+                        return request.get('/app').then(function (res) {
+                            expect(res).to.have.property('text', message)
+                        })
+                    })
+
+                    it("should respond with hello world with a route of '/app' and a vhost of www.yo.com", function () {
+                        var score = {
+                            apps: {
+                                path: '/app',
+                                vhost: 'www.yo.com',
+                                routers: {
+                                    routes: {
+                                        methods: {
+                                            get: {
+                                                handlers: handlers.respond(message).promise
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        app.conduct(score);
+                        return request
+                            .get('/app')
+                            .set('host', 'www.yo.com')
+                            .then(function (res) {
+                                expect(res).to.have.property('text', message)
+                            })
+                    })
+
+                    it("should respond with hello world with a vhost of www.yo.com", function () {
+                        var score = {
+                            apps: {
+                                vhost: 'www.yo.com',
+                                routers: {
+                                    routes: {
+                                        methods: {
+                                            get: {
+                                                handlers: handlers.respond(message).promise
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        app.conduct(score);
+                        return request
+                            .get('/')
+                            .set('host', 'www.yo.com')
+                            .then(function (res) {
+                                expect(res).to.have.property('text', message)
+                            })
+                    })
+                });
             })
 
+            describe("test error chaining", function(){
+                var app,
+                    request,
+                    message = "oops";
+
+                beforeEach(function () {
+                    app = expressComposer();
+                    request = supertest(app);
+                });
+
+                describe("array scope", function(){
+                    var score = {
+                        routers:[{
+
+                        }]
+                    }
+                });
+
+                describe("object scope", function(){
+
+                });
+            })
         });
     }
     (require)

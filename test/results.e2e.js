@@ -7,7 +7,8 @@
         handlers = require('./utils/handlers'),
         joi = require('joi'),
         util = require('util'),
-        chai = require('./utils/chai'),
+        chai = require('chai'),
+        supertest = require('supertest-as-promised'),
         expect = chai.expect;
 
     describe("test that we set the results property for named functions",function(){
@@ -34,14 +35,14 @@
         beforeEach(function () {
             app = expressComposer();
             app.conduct(score);
-            request = chai.request(app);
+            request = supertest(app);
         });
 
         it('should respond with ' + message, function(){
             return request
                 .get('/')
+                .expect(200)
                 .then(function (res) {
-                    expect(res).to.have.status(200);
                     expect(res.text).to.equal(message);
                 });
         });

@@ -51,7 +51,7 @@
         streamProcessors = [gulp.src(paths.src)];
     })
 
-    gulp.task('e2e:unit', function(){
+    gulp.task('e2e:unit', function () {
         streamProcessors = [gulp.src([paths.e2e, paths.unit])];
     })
 
@@ -82,9 +82,9 @@
 
     gulp.task('enforce', function () {
         streamProcessors.push(cover.enforce({
-                statements: 70,
-                blocks: 70,
-                lines: 70,
+                statements: 80,
+                blocks: 80,
+                lines: 80,
                 uncovered: undefined
             })
         )
@@ -135,9 +135,9 @@
 
     gulp.task('test:unit', ['unit', 'mocha', 'process'])
 
-    gulp.task('test:e2e',['e2e','mocha','process'])
+    gulp.task('test:e2e', ['e2e', 'mocha', 'process'])
 
-    gulp.task('test', function(){
+    gulp.task('test', function () {
         return runSequence(['test:unit', 'test:e2e']);
     })
 
@@ -153,7 +153,7 @@
 
     gulp.task('cover', ['e2e:unit', 'instrument', 'mocha', 'gather', 'format', 'report', 'enforce', 'process']);
 
-    gulp.task('travis', function(){
+    gulp.task('travis', function () {
         return runSequence('default', 'track');
     })
 
