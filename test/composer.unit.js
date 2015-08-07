@@ -11,14 +11,119 @@
         expect = chai.expect;
     describe("test composer", function () {
         describe("test instantiation of default factory", function () {
-            var scoreFactory;
+            var composer
             before(function () {
-                scoreFactory = expressComposer.composer();
+                composer = expressComposer.composer();
+                composer.initialize();
             });
 
             it("should create an instance of default composer", function () {
-                expect(scoreFactory).to.be.ok;
+                expect(composer).to.be.ok;
             });
+
+            ['', 'Sync'].forEach(function (type) {
+                describe("test compose" + type, function () {
+                    it("should throw an error for invalid values", function () {
+                        return new Promise(function (resolve, reject) {
+                            try {
+                                resolve(composer['compose' + type]());
+                            } catch (e) {
+                                reject(e);
+                            }
+                        })
+                            .catch(function (err) {
+                                expect(err).to.be.instanceof(Error);
+                            })
+                    })
+
+                    it("should create a a score", function () {
+                        return new Promise(function (resolve, reject) {
+                            try {
+                                resolve(composer['compose' + type]({}));
+                            } catch (e) {
+                                reject(e);
+                            }
+                        })
+                    })
+                })
+
+                describe("test composeApp", function () {
+                    it("should throw an error for invalid values", function () {
+                        return new Promise(function (resolve, reject) {
+                            try {
+                                resolve(composer['composeApp' + type]());
+                            } catch (e) {
+                                reject(e);
+                            }
+                        })
+                            .catch(function (err) {
+                                expect(err).to.be.instanceof(Error);
+                            })
+                    })
+
+                    it("should create a a score", function () {
+                        return new Promise(function (resolve, reject) {
+                            try {
+                                resolve(composer['composeApp' + type]({}));
+                            } catch (e) {
+                                reject(e);
+                            }
+                        })
+                    })
+                })
+
+                describe("test composeRouter", function () {
+                    it("should throw an error for invalid values", function () {
+                        return new Promise(function (resolve, reject) {
+                            try {
+                                resolve(composer['composeRouter' + type]());
+                            } catch (e) {
+                                reject(e);
+                            }
+                        })
+                            .catch(function (err) {
+                                expect(err).to.be.instanceof(Error);
+                            })
+                    })
+
+                    it("should create a a score", function () {
+                        return new Promise(function (resolve, reject) {
+                            try {
+                                resolve(composer['composeRouter' + type]({}));
+                            } catch (e) {
+                                reject(e);
+                            }
+                        })
+                    })
+                })
+
+
+                describe("test composeRoute", function () {
+                    it("should throw an error for invalid values", function () {
+                        return new Promise(function (resolve, reject) {
+                            try {
+                                resolve(composer['composeRoute' + type]());
+                            } catch (e) {
+                                reject(e);
+                            }
+                        })
+                            .catch(function (err) {
+                                expect(err).to.be.instanceof(Error);
+                            })
+                    })
+
+                    it("should create a a score", function () {
+                        return new Promise(function (resolve, reject) {
+                            try {
+                                resolve(composer['composeRoute' + type]({}));
+                            } catch (e) {
+                                reject(e);
+                            }
+                        })
+                    })
+                })
+            })
+
 
         });
 
@@ -99,6 +204,7 @@
                 return composer.ready;
             });
         });
+
 
     });
 }(require, describe, before, it))
