@@ -154,7 +154,7 @@
     gulp.task('cover', ['e2e:unit', 'instrument', 'mocha', 'gather', 'format', 'report', 'enforce', 'process']);
 
     gulp.task('travis', function () {
-        return runSequence('default', 'track');
+        return runSequence('cover'/*,'quality'*/, 'secure'/*, 'style'*/, 'track');
     })
 
     /**********/
@@ -162,5 +162,4 @@
     gulp.task('default', function () {
         return runSequence('cover'/*,'quality'*/, 'secure'/*, 'style'*/);
     });
-
 }())
