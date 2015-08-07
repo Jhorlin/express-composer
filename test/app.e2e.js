@@ -699,6 +699,37 @@
                                     });
                             });
                         });
+                        describe("test score created with object and method as function", function () {
+                            var app,
+                                message = "hello world",
+                                request,
+                                score = {
+                                    routers: {
+                                        path: path.router,
+                                        routes: {
+                                            path: path.route,
+                                            methods: {
+                                                get:  handlers.respond(message)[handlerType]
+                                            }
+                                        }
+                                    }
+                                };
+                            beforeEach(function () {
+                                app = expressComposer();
+                                expect(app).to.be.ok;
+                                app.conduct(score);
+                                request = supertest(app);
+                            });
+
+                            it("should return the error thrown", function () {
+                                request
+                                    .get([path.router, path.route].join('') || '/')
+                                    .expect(200)
+                                    .then(function (res) {
+                                        expect(res).to.have.property('text', message);
+                                    });
+                            });
+                        });
                     });
 
                     describe(util.format("test route preHandler for handlerType:%s routerPath:%s routePath:%s",
