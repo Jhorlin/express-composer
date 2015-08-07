@@ -82,9 +82,9 @@
 
     gulp.task('enforce', function () {
         streamProcessors.push(cover.enforce({
-                statements: 80,
-                blocks: 80,
-                lines: 80,
+                statements: 99,
+                blocks: 100,
+                lines: 100,
                 uncovered: undefined
             })
         )
