@@ -1,6 +1,6 @@
 {
   "name": "express-composer",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A composition library to help organize your express routes and handlers",
   "main": "index.js",
   "scripts": {

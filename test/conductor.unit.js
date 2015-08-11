@@ -5,6 +5,7 @@
     var expressComposer = require('./../index'),
         chai = require('chai'),
         express = require('express'),
+        methods = require('methods'),
         expect = chai.expect;
     describe("test conductor mixin", function(){
         describe("test the conductor app mixin", function(){
@@ -120,7 +121,17 @@
 
             it("should create a router", function(){
                 expect(router.conduct({})).to.be.ok;
-            })
+            });
+
+            it("should create a nested routes", function(){
+                expect(router.conduct({
+                 routers:{
+                     routers:{
+                         routers:{}
+                     }
+                 }
+                })).to.be.ok;
+            });
 
         });
 
@@ -137,6 +148,50 @@
             it("should create a route", function(){
                 expect(route.conduct({})).to.be.ok;
             })
+
+            methods.forEach(function(method){
+                it("should create a route with method " + method + " with method object", function(){
+                    var score = {methods:{}};
+                    score.methods[method] = {};
+                    expect(route.conduct(score)).to.be.ok;
+                })
+
+                it("should create a route with method " + method + " with array", function(){
+                    var score = {methods:{}};
+                    score.methods[method] = [function(){}];
+                    expect(route.conduct(score)).to.be.ok;
+                })
+
+                it("should create a route with method " + method + " with function", function(){
+                    var score = {methods:{}};
+                    score.methods[method] = function(){};
+                    expect(route.conduct(score)).to.be.ok;
+                })
+            })
+
+            it("should create a route with all methods as an object: " + methods.join(','), function(){
+                var score = {methods:{}};
+                methods.forEach(function(method){
+                   score.methods[method] = {};
+                });
+                expect(route.conduct(score)).to.be.ok;
+            });
+
+            it("should create a route with all methods as an array: " + methods.join(','), function(){
+                var score = {methods:{}};
+                methods.forEach(function(method){
+                    score.methods[method] = [function(){}];
+                });
+                expect(route.conduct(score)).to.be.ok;
+            });
+
+            it("should create a route with all methods as a function: " + methods.join(','), function(){
+                var score = {methods:{}};
+                methods.forEach(function(method){
+                    score.methods[method] = function(){};
+                });
+                expect(route.conduct(score)).to.be.ok;
+            });
 
         });
 
