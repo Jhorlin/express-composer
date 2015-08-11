@@ -133,6 +133,26 @@
             });
 
         });
+
+        describe.only("test request", function(){
+            it("should set a request object", function(){
+                var scope = new Scope(),
+                    testObject = {
+                        'test':'me'
+                    };
+                scope.setRequest(testObject);
+                expect(scope.request).to.eql(testObject);
+            })
+            it("should set a request object when referenced via a child", function(){
+                var scope = new Scope(),
+                    testObject = {
+                        'test':'me'
+                    };
+                scope.setRequest(testObject);
+                var childScope = scope.new();
+                expect(childScope.request).to.eql(testObject);
+            })
+        })
     });
 
 }(require('../index').Scope));
