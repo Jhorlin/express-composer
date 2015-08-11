@@ -134,7 +134,7 @@
 
         });
 
-        describe.only("test request", function(){
+        describe("test request", function(){
             it("should set a request object", function(){
                 var scope = new Scope(),
                     testObject = {
