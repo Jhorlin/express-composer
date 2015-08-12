@@ -7,6 +7,7 @@
         handlers = require('./utils/handlers'),
         joi = require('joi'),
         util = require('util'),
+        Promise = require('bluebird'),
         chai = require('chai'),
         supertest = require('supertest-as-promised'),
         expect = chai.expect;
@@ -1078,6 +1079,82 @@
                     });
             });
         });
+
+        describe('test named function that do not return a result are not added to a scopes result', function(){
+            var app,
+                request;
+            beforeEach(function () {
+                app = expressComposer();
+                request = supertest(app);
+            });
+
+            it("should return router param 'routerTest' concatenated with router param 'routeTest' separated by a space", function () {
+                app.conduct({
+                    routers: {
+                        routes: {
+                            methods: {
+                                get: {
+                                    handlers: [function undefinedValue(req, res){
+                                        return;
+                                    },
+                                    function(req, res){
+                                        return res.send(this.results.undefinedValue);
+                                    }]
+                                }
+                            }
+                        },
+                        options: {
+                            mergeParams: true
+                        }
+                    }
+                });
+
+                return request.get('/')
+                    .expect(200)
+                    .then(function (res) {
+                        expect(res.text).to.equal("");
+                    });
+            });
+        })
+
+
+        describe.only('test a handler array cancels when request is sent', function(){
+            var app,
+                message = 'hello world',
+                request;
+            beforeEach(function () {
+                app = expressComposer();
+                request = supertest(app);
+            });
+
+            it("should return router param 'routerTest' concatenated with router param 'routeTest' separated by a space", function () {
+                app.conduct({
+                    routers: {
+                        routes: {
+                            methods: {
+                                get: {
+                                    handlers: [function sendNow(req, res){
+                                        return res.send(message);;
+                                    },
+                                        function(req, res){
+                                            return res.send('oops');
+                                        }]
+                                }
+                            }
+                        },
+                        options: {
+                            mergeParams: true
+                        }
+                    }
+                });
+
+                return request.get('/')
+                    .expect(200)
+                    .then(function (res) {
+                        expect(res.text).to.equal(message);
+                    });
+            });
+        })
 
         describe("test nested routers", function () {
 

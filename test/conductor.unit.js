@@ -38,8 +38,8 @@
                 expect(route.conduct).to.be.an.instanceOf(Function)
             });
 
-            it("expressComposer should contain a Scope class", function(){
-                expect(expressComposer.Scope).to.be.ok;
+            it("expressComposer should contain a ScopeProvider class", function(){
+                expect(expressComposer.ScopeProvider).to.be.ok;
             });
 
             it("expressComposer should contain a Validator class", function(){
@@ -76,8 +76,8 @@
                 expect(route.conduct).to.be.an.instanceOf(Function)
             });
 
-            it("expressComposer should contain a Scope class", function(){
-                expect(expressComposer.Scope).to.be.ok;
+            it("expressComposer should contain a ScopeProvider class", function(){
+                expect(expressComposer.ScopeProvider).to.be.ok;
             });
 
             it("expressComposer should contain a Validator class", function(){
