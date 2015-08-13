@@ -11,5 +11,5 @@ try {
 }
 exports = module.exports = require('./lib/conductor');
 exports.Validator = require('joi');
-exports.Scope = require('./lib/scope');
+exports.ScopeProvider = require('./lib/scopeProvider');
 exports.composer = require('./lib/composer');

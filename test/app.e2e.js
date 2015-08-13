@@ -7,6 +7,7 @@
         handlers = require('./utils/handlers'),
         joi = require('joi'),
         util = require('util'),
+        Promise = require('bluebird'),
         chai = require('chai'),
         supertest = require('supertest-as-promised'),
         expect = chai.expect;
@@ -1078,6 +1079,218 @@
                     });
             });
         });
+
+        describe('test named function that do not return a result are not added to a scopes result', function () {
+            var app,
+                request;
+            beforeEach(function () {
+                app = expressComposer();
+                request = supertest(app);
+            });
+
+            it("should return router param 'routerTest' concatenated with router param 'routeTest' separated by a space", function () {
+                app.conduct({
+                    routers: {
+                        routes: {
+                            methods: {
+                                get: {
+                                    handlers: [function undefinedValue (req, res) {
+                                        return;
+                                    },
+                                        function (req, res) {
+                                            return res.send(this.results.undefinedValue);
+                                        }]
+                                }
+                            }
+                        },
+                        options: {
+                            mergeParams: true
+                        }
+                    }
+                });
+
+                return request.get('/')
+                    .expect(200)
+                    .then(function (res) {
+                        expect(res.text).to.equal("");
+                    });
+            });
+        })
+
+
+        describe('test a handler array does not continue when the first handler responds', function () {
+            var app,
+                message = 'hello world',
+                request;
+            beforeEach(function () {
+                app = expressComposer();
+                request = supertest(app);
+            });
+
+            it("should return a message of " + message, function () {
+                app.conduct({
+                    routers: {
+                        routes: {
+                            methods: {
+                                get: {
+                                    handlers: [function sendNow (req, res) {
+                                        res.send(message);
+                                    },
+                                        function (req, res) {
+                                            return res.send('oops');
+                                        }]
+                                }
+                            }
+                        },
+                        options: {
+                            mergeParams: true
+                        }
+                    }
+                });
+
+                return request.get('/')
+                    .expect(200)
+                    .then(function (res) {
+                        expect(res.text).to.equal(message);
+                    });
+            });
+        })
+
+        describe('test a error handler array', function () {
+            var app,
+                message = 'oops',
+                request;
+            beforeEach(function () {
+                app = expressComposer();
+                request = supertest(app);
+            });
+
+            it("should return as soon as the first error handler responds", function () {
+                app.conduct({
+                    routers: {
+                        routes: {
+                            methods: {
+                                get: {
+                                    handlers: [function (req, res) {
+                                        throw new Error(message);
+                                    }],
+                                    errorHandlers: [function (err, req, res) {
+                                        res.status(500).send(err.message);
+                                    }, function (err) {
+                                        res.status(501).send('not the right message');
+                                    }]
+                                }
+                            }
+                        },
+                        options: {
+                            mergeParams: true
+                        }
+                    }
+                });
+
+                return request.get('/')
+                    .expect(500)
+                    .then(function (res) {
+                        expect(res.text).to.equal(message);
+                    });
+            });
+
+            it("should continue to propagate the error up even if an error throws an exception ", function () {
+                app.conduct({
+                    routers: {
+                        routes: {
+                            methods: {
+                                get: {
+                                    handlers: [function (req, res) {
+                                        throw new Error(message);
+                                    }],
+                                    errorHandlers: [function message (err) {
+                                        return err.message
+                                    },
+                                        function (err) {
+                                            throw new Error("not handled within an error");
+                                        }]
+                                }
+                            }
+                        },
+                        errorHandlers: function (err, req, res) {
+                            res.status(500).send(err.message);
+                        }
+                    }
+                });
+
+                return request.get('/')
+                    .expect(500)
+                    .then(function (res) {
+                        expect(res.text).to.equal(message);
+                    });
+            });
+
+            it("should continue to propagate the error even if an error throws an exception ", function () {
+                app.conduct({
+                    routers: {
+                        routes: {
+                            methods: {
+                                get: {
+                                    handlers: [function (req, res) {
+                                        throw new Error(message);
+                                    }],
+                                    errorHandlers: [function message (err) {
+                                        return err.message
+                                    },
+                                        function (err) {
+                                            throw new Error("not handled within an error");
+                                        },
+                                        function (err, req, res) {
+                                            res.status(500).send(this.errors.message);
+                                        }]
+                                }
+                            }
+                        },
+                        options: {
+                            mergeParams: true
+                        }
+                    }
+                });
+
+                return request.get('/')
+                    .expect(500)
+                    .then(function (res) {
+                        expect(res.text).to.equal(message);
+                    });
+            });
+
+            it("should set scope.errors", function () {
+                app.conduct({
+                    routers: {
+                        routes: {
+                            methods: {
+                                get: {
+                                    handlers: [function (req, res) {
+                                        throw new Error(message);
+                                    }],
+                                    errorHandlers: [function message (err) {
+                                        return err.message
+                                    }, function (err, req, res) {
+                                        res.status(500).send(this.errors.message);
+                                    }]
+                                }
+                            }
+                        },
+                        options: {
+                            mergeParams: true
+                        }
+                    }
+                });
+
+                return request.get('/')
+                    .expect(500)
+                    .then(function (res) {
+                        expect(res.text).to.equal(message);
+                    });
+            });
+
+        })
 
         describe("test nested routers", function () {
 
