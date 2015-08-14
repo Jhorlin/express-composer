@@ -1369,7 +1369,7 @@
 
         });
 
-        describe.only('test router path and default route', function () {
+        describe('test router path and default route', function () {
             var app,
                 request,
                 message = "hello world",
