@@ -1369,6 +1369,40 @@
 
         });
 
+        describe.only('test router path and default route', function () {
+            var app,
+                request,
+                message = "hello world",
+                score = {
+                    routers: {
+                        path:'/router',
+                        routes: {
+                            methods: {
+                                get: function(req, res){
+                                        res.send(message);
+
+                                }
+                            }
+                        }
+                    }
+                };
+
+            beforeEach(function () {
+                app = expressComposer();
+                app.conduct(score);
+                request = supertest(app);
+            });
+
+            it("should respond with " + message, function () {
+                return request
+                    .get('/router')
+                    .expect(200)
+                    .then(function (res) {
+                        expect(res.text).to.equal(message);
+                    });
+            });
+        })
+
         describe("test app level routing", function () {
             var app,
                 request,
