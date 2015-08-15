@@ -1369,39 +1369,9 @@
 
         });
 
-        describe('test router path and default route', function () {
-            var app,
-                request,
-                message = "hello world",
-                score = {
-                    routers: {
-                        path:'/router',
-                        routes: {
-                            methods: {
-                                get: function(req, res){
-                                        res.send(message);
+        describe('test validator of a route', function () {
 
-                                }
-                            }
-                        }
-                    }
-                };
-
-            beforeEach(function () {
-                app = expressComposer();
-                app.conduct(score);
-                request = supertest(app);
-            });
-
-            it("should respond with " + message, function () {
-                return request
-                    .get('/router')
-                    .expect(200)
-                    .then(function (res) {
-                        expect(res.text).to.equal(message);
-                    });
-            });
-        })
+        });
 
         describe("test app level routing", function () {
             var app,
@@ -1670,7 +1640,40 @@
                         })
                 })
             });
-        })
+        });
+
+        describe('test merge parameters as default',function(){
+            var app,
+                request;
+            beforeEach(function () {
+                app = expressComposer();
+                request = supertest(app);
+            });
+            it("should have merged parameters by default", function () {
+                var message = 'myMessage';
+                app.conduct({
+                    routers: {
+                        path: '/router/:merged',
+                        routes: {
+                            methods: {
+                                get: {
+                                    handlers: function (req, res) {
+                                        res.send(req.params.merged);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+
+                return request
+                    .get('/router/' + message)
+                    .expect(200)
+                    .then(function (res) {
+                        expect(res.text).to.equal(message);
+                    });
+            });
+        });
 
         describe("test consecutive calls", function () {
             var app,
@@ -1743,6 +1746,7 @@
                             })
                     });
             });
+
         });
     });
 }(require))
