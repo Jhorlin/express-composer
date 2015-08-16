@@ -1642,7 +1642,7 @@
             });
         });
 
-        describe('test merge parameters as default',function(){
+        describe('test merge parameters as default', function () {
             var app,
                 request;
             beforeEach(function () {
@@ -1673,6 +1673,35 @@
                         expect(res.text).to.equal(message);
                     });
             });
+
+            it("should have merged parameters by default for nested routers", function () {
+                var message = 'myMessage';
+                app.conduct({
+                    routers: {
+                        path: '/router',
+                        routers: {
+                            path: '/:merged',
+                            routes: {
+                                methods: {
+                                    get: {
+                                        handlers: function (req, res) {
+                                            res.send(req.params.merged);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+
+                return request
+                    .get('/router/' + message)
+                    .expect(200)
+                    .then(function (res) {
+                        expect(res.text).to.equal(message);
+                    });
+            });
+
         });
 
         describe("test consecutive calls", function () {
