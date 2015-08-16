@@ -133,6 +133,25 @@
                 })).to.be.ok;
             });
 
+            it("should throw an error when a nested router has an invalid path", function(){
+                expect(router.conduct.bind(router,{
+                   routers:{
+                       path:{}
+                   }
+                })).to.throw(Error);
+            });
+
+            it("should throw an error when a nested router has an invalid options", function(){
+                expect(router.conduct.bind(router,{
+                    routers:{
+                        options:{
+                            these:'are',
+                            not:'valid'
+                        }
+                    }
+                })).to.throw(Error);
+            });
+
         });
 
         describe("test route", function(){
