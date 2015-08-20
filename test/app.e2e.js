@@ -1117,7 +1117,6 @@
             });
         })
 
-
         describe('test a handler array does not continue when the first handler responds', function () {
             var app,
                 message = 'hello world',
@@ -1777,5 +1776,48 @@
             });
 
         });
+
+        describe("test parallel requests", function () {
+            var app,
+                request;
+
+            before(function () {
+                app = expressComposer();
+                app.conduct({
+                    routers: {
+                        routes: {
+                            path: '/:num',
+                            preHandlers: function number (req) {
+                                return req.params.num
+                            },
+                            methods: {
+                                get: function (req, res, err) {
+                                    var self = this;
+                                    setTimeout(function () {
+                                        res.send(self.results.number)
+                                    }, Math.floor(Math.random() * 1000))
+                                }
+                            }
+                        }
+                    }
+                });
+                request = supertest(app);
+            })
+
+            it('should respond with a random number in a random amout of time less than 500ms', function () {
+                var promises = []
+                for (var i = 0; i < 10; ++i) {
+                    promises.push((function (number) {
+                        return request.get('/' + number)
+                            .expect(200)
+                            .then(function (response) {
+                                expect(response.text).to.eql(number.toString())
+                            })
+                    }(Math.floor(Math.random() * 1000))));
+
+                }
+                return Promise.all(promises);
+            })
+        })
     });
 }(require))

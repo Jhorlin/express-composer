@@ -9,7 +9,7 @@
         ScopeProvider = require('../index').ScopeProvider,
         extend = require('extend'),
         expect = chai.expect;
-    describe("test ScopeProvider", function () {
+    describe("test Scope", function () {
         it("should create a scopeProvider", function () {
             var scopeProvider = new ScopeProvider();
             expect(scopeProvider).to.be.an.instanceof(ScopeProvider);
@@ -20,30 +20,42 @@
             expect(scopeProvider).to.be.an.instanceof(ScopeProvider);
         });
 
-        it("should create a scope", function () {
-            var scopeProvider = new ScopeProvider();
-            return scopeProvider.scope.then(function (scope) {
+        it("should create a scope", function (done) {
+            var scopeProvider = new ScopeProvider(),
+                req = {};
+            scopeProvider.init(req, {}, function (err) {
+                if (err) {
+                    done(err);
+                }
+                var scope = req.expressComposerScopeCache.get(scopeProvider.key);
                 expect(scope).to.be.ok;
+                done();
             });
         });
 
-        it("should create a scope with the properties of an object when primed with an object", function () {
+        it("should create a scope with the properties of an object when primed with an object", function (done) {
             var primer = {
                 a: 'b',
                 c: 'd',
                 e: 'f'
             }
 
-            var scopeProvider = new ScopeProvider(primer);
-            return scopeProvider.scope.then(function (scope) {
+            var scopeProvider = new ScopeProvider(primer),
+                req = {};
+            scopeProvider.init(req, {}, function (err) {
+                if (err) {
+                    done(err);
+                }
+                var scope = req.expressComposerScopeCache.get(scopeProvider.key);
                 Object.keys(primer).forEach(function (key) {
                     expect(scope).to.have.property(key, primer[key]);
                 })
+                done();
             });
 
         });
 
-        it("should create a scope with the properties of an object when primed with a function returning that object", function () {
+        it("should create a scope with the properties of an object when primed with a function returning that object", function (done) {
             var primer = {
                 a: 'b',
                 c: 'd',
@@ -51,17 +63,22 @@
             }
 
             var scopeProvider = new ScopeProvider(function () {
-                return primer;
-            });
-            return scopeProvider.scope.then(function (scope) {
+                    return primer;
+                }),
+                req = {};
+            scopeProvider.init(req, {}, function (err) {
+                if (err) {
+                    done(err);
+                }
+                var scope = req.expressComposerScopeCache.get(scopeProvider.key);
                 Object.keys(primer).forEach(function (key) {
                     expect(scope).to.have.property(key, primer[key]);
                 })
-            });
-
+                done();
+            })
         });
 
-        it("should create a scope with the properties of an object when primed with a promise of an object", function () {
+        it("should create a scope with the properties of an object when primed with a promise of an object", function (done) {
             var primer = {
                     a: 'b',
                     c: 'd',
@@ -71,16 +88,21 @@
                     resolve(primer);
                 });
 
-            var scopeProvider = new ScopeProvider(promise);
-            return scopeProvider.scope.then(function (scope) {
+            var scopeProvider = new ScopeProvider(promise),
+                req = {};
+            scopeProvider.init(req, {}, function (err) {
+                if (err) {
+                    done(err);
+                }
+                var scope = req.expressComposerScopeCache.get(scopeProvider.key);
                 Object.keys(primer).forEach(function (key) {
                     expect(scope).to.have.property(key, primer[key]);
                 })
-            });
-
+                done();
+            })
         });
 
-        it("should create a scope with the properties of an object when primed with a function returning a promise of object", function () {
+        it("should create a scope with the properties of an object when primed with a function returning a promise of object", function (done) {
             var primer = {
                 a: 'b',
                 c: 'd',
@@ -88,87 +110,69 @@
             };
 
             var scopeProvider = new ScopeProvider(function () {
-                return new Promise(function (resolve) {
-                    resolve(primer);
-                });
-            });
-            return scopeProvider.scope.then(function (scope) {
+                    return new Promise(function (resolve) {
+                        resolve(primer);
+                    });
+                }),
+                req = {};
+            scopeProvider.init(req, {}, function (err) {
+                if (err) {
+                    done(err);
+                }
+                var scope = req.expressComposerScopeCache.get(scopeProvider.key);
                 Object.keys(primer).forEach(function (key) {
                     expect(scope).to.have.property(key, primer[key]);
                 })
-            });
-
+                done();
+            })
         });
 
-        describe('test that we can dispose of a scope', function () {
+        describe('test parent ScopeProvider', function () {
             var scopeProvider,
                 primer = {
                     a: 'b',
                     c: 'd',
                     e: 'f'
-                };
-            beforeEach(function () {
+                },
+                req = {};
+
+            beforeEach(function (done) {
                 scopeProvider = new ScopeProvider(primer)
+                scopeProvider.init(req, {}, done);
             });
 
-            it("should have a dispose property", function () {
-                expect(scopeProvider).to.have.property('dispose');
+            afterEach(function () {
+                req = {};
             });
 
-            it("should reset to its original state after being disposed", function () {
-                var newValues = {
-                    g: 'h',
-                    i: 'j',
-                    k: 'k'
-                };
-                return scopeProvider.scope.then(function (scope) {
-                    Object.keys(newValues).forEach(function (key) {
-                        expect(scope).not.to.have.property(key);
-                    })
-                    Object.keys(newValues).forEach(function (key) {
-                        scope[key] = newValues[key];
-                    })
-                    Object.keys(newValues).forEach(function (key) {
-                        expect(scope).to.have.property(key, newValues[key]);
-                    })
-                    //dispose
-                    scopeProvider.dispose();
-                    return scopeProvider.scope.then(function (scope) {
-                        Object.keys(newValues).forEach(function (key) {
-                            expect(scope).not.to.have.property(key);
-                        })
-                    })
-                })
-            })
 
-            describe("test parent scope provider", function () {
+            describe("test child inherits parent properties ", function () {
                 var childScopeProvider,
                     childPrimer = {
                         g: 'h',
                         i: 'j',
                         k: 'k'
                     };
-                beforeEach(function () {
+                beforeEach(function (done) {
                     childScopeProvider = new ScopeProvider(childPrimer, scopeProvider);
+                    childScopeProvider.init(req, {}, done);
                 })
 
                 it("should create a scope with a prototype of the parent scopeProvider's scope", function () {
-                    return childScopeProvider.scope.then(function (scope) {
-                        Object.keys(primer).forEach(function (key) {
-                            expect(scope).to.have.property(key, primer[key]);
-                        });
-                        Object.keys(childPrimer).forEach(function (key) {
-                            expect(scope).to.have.property(key, childPrimer[key]);
-                        })
-                        Object.keys(childPrimer).forEach(function (key) {
-                            expect(scope).to.have.ownProperty(key, childPrimer[key]);
-                        })
-                        Object.keys(primer).forEach(function (key) {
-                            expect(scope).to.not.have.ownProperty(key, primer[key]);
-                        });
+                    var scope = req.expressComposerScopeCache.get(childScopeProvider.key);
+                    Object.keys(primer).forEach(function (key) {
+                        expect(scope).to.have.property(key, primer[key]);
+                    });
+                    Object.keys(childPrimer).forEach(function (key) {
+                        expect(scope).to.have.property(key, childPrimer[key]);
+                    })
+                    Object.keys(childPrimer).forEach(function (key) {
+                        expect(scope).to.have.ownProperty(key, childPrimer[key]);
+                    })
+                    Object.keys(primer).forEach(function (key) {
+                        expect(scope).to.not.have.ownProperty(key, primer[key]);
                     });
                 })
-
             })
 
             describe('test scope', function () {
@@ -177,9 +181,7 @@
 
 
                 beforeEach(function () {
-                    return scopeProvider.scope.then(function (providedScope) {
-                        scope = providedScope;
-                    })
+                    scope = req.expressComposerScopeCache.get(scopeProvider.key);
                 })
 
                 it("should have the properties:" + scopeProperties.join(', '), function () {
@@ -346,9 +348,6 @@
 
                 });
             })
-
         })
-
     });
-
 }(require));
