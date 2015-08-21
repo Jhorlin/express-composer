@@ -7,6 +7,8 @@ A composition library built by extending [express](http://expressjs.com/)
 [![Dependency Status](https://david-dm.org/jhorlin/express-composer.svg)](https://david-dm.org/jhorlin/express-composer)
 [![devDependency Status](https://david-dm.org/jhorlin/express-composer/dev-status.svg)](https://david-dm.org/jhorlin/express-composer#info=devDependencies)
 
+##[Coverage Report](http://htmlpreview.github.io/?https://github.com/Jhorlin/express-composer/blob/master/reports/coverage.html)
+
 ## Modules
 <table>
   <thead>
@@ -28,7 +30,7 @@ A composition library built by extending [express](http://expressjs.com/)
 </td>
     </tr>
 <tr>
-    <td><a href="#module_ScopeProvider">ScopeProvider</a></td>
+    <td><a href="#module_Scope">Scope</a></td>
     <td></td>
     </tr>
 </tbody>
@@ -39,7 +41,9 @@ A composition library built by extending [express](http://expressjs.com/)
 method for creating an express application with express-compose mixin
 
 **Example**  
-```javascriptvar expressComposer = require('express-composer');```
+```javascript
+var expressComposer = require('express-composer');
+```
 
 * [express-composer](#module_express-composer)
   * [expressComposer()](#exp_module_express-composer--expressComposer) ⇒ <code>app</code> ⏏
@@ -48,7 +52,6 @@ method for creating an express application with express-compose mixin
       * [.handle(handlers, scopeProvider)](#module_express-composer--expressComposer.handle) ⇒ <code>function</code>
       * [.error(handlers, scopeProvider)](#module_express-composer--expressComposer.error) ⇒ <code>function</code>
       * [.validate(validate, scopeProvider)](#module_express-composer--expressComposer.validate) ⇒ <code>function</code>
-      * [.dispose(scopeProvider)](#module_express-composer--expressComposer.dispose) ⇒ <code>function</code>
     * _inner_
       * [~scopeArg](#module_express-composer--expressComposer..scopeArg) : <code>Object</code> &#124; <code>function</code> &#124; <code>Promise.&lt;Object&gt;</code>
       * [~requestHandlers](#module_express-composer--expressComposer..requestHandlers) : <code>function</code> &#124; <code>Array.&lt;function()&gt;</code>
@@ -67,7 +70,10 @@ Creates an extended express app
 
 **Kind**: Exported function  
 **Example**  
-```javascriptvar express = require('expressComposer'),    app = express();```
+```javascript
+var express = require('expressComposer'),
+    app = express();
+```
 <a name="module_express-composer--expressComposer.extend"></a>
 #### expressComposer.extend(app) ⇒ <code>app</code>
 Extends an express app if it was not created with express-compose
@@ -79,7 +85,12 @@ Extends an express app if it was not created with express-compose
 | app | <code>function</code> | express app |
 
 **Example**  
-```javascriptvar express = require('express'),    expressComposer = require('express-composer'),    app = express();expressComposer.extend(app);```
+```javascript
+var express = require('express'),
+    expressComposer = require('express-composer'),
+    app = express();
+expressComposer.extend(app);
+```
 <a name="module_express-composer--expressComposer.handle"></a>
 #### expressComposer.handle(handlers, scopeProvider) ⇒ <code>function</code>
 Creates an express middle ware handler that will iterate through composers handlers
@@ -112,16 +123,6 @@ Create an express middle ware that validates an incoming request
 | --- | --- | --- |
 | validate | <code>function</code> | validation function |
 | scopeProvider | <code>ScopeProvider</code> | scope variable |
-
-<a name="module_express-composer--expressComposer.dispose"></a>
-#### expressComposer.dispose(scopeProvider) ⇒ <code>function</code>
-Disposes of the current scope and cleans up after the response is complete
-
-**Kind**: static method of <code>[expressComposer](#exp_module_express-composer--expressComposer)</code>  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| scopeProvider | <code>ScopeProvider</code> | the scope provider |
 
 <a name="module_express-composer--expressComposer..scopeArg"></a>
 #### expressComposer~scopeArg : <code>Object</code> &#124; <code>function</code> &#124; <code>Promise.&lt;Object&gt;</code>
