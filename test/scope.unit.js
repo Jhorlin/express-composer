@@ -177,7 +177,7 @@
 
             describe('test scope', function () {
                 var scope,
-                    scopeProperties = ['addResult', 'addError', 'setRequest', 'results', 'errors', 'request'];
+                    scopeProperties = ['addResult', 'addError', 'setQuery', 'setBody', 'setParam', 'body', 'query', 'param', 'errors'];
 
 
                 beforeEach(function () {
@@ -191,56 +191,130 @@
                     });
                 })
 
-                describe('test request', function () {
-                    var request = {
+                describe('test param', function () {
+                    var param = {
                         key1: 'value1',
                         key2: 'value2'
                     }
                     beforeEach(function () {
-                        scope.setRequest(request);
+                        scope.setParam(param);
                     })
 
-                    it('should get the request', function () {
-                        expect(scope.request).to.eql(request);
+                    it('should get the param', function () {
+                        expect(scope.param).to.eql(param);
                     });
 
-                    describe('test request for child scope', function () {
+                    describe('test param for child scope', function () {
                         var childScope,
-                            childRequest = {
+                            childParam = {
                                 key2: 'childValue2',
                                 key3: 'childValue3'
                             }
                         beforeEach(function () {
                             childScope = scope.new();
-                            childScope.setRequest(childRequest);
+                            childScope.setParam(childParam);
                         });
 
-                        it('should get the request', function () {
-                            expect(childScope.request).to.eql(extend({}, request, childRequest));
+                        it('should get the param', function () {
+                            expect(childScope.param).to.eql(extend({}, param, childParam));
                         });
 
-                        it('should inherit request from the parent', function(){
-                            var extended = extend({}, request, childRequest);
-                            Object.keys(extended).forEach(function(property){
-                                expect(childScope.request).to.have.property(property, extended[property]);
+                        it('should inherit param from the parent', function () {
+                            var extended = extend({}, param, childParam);
+                            Object.keys(extended).forEach(function (property) {
+                                expect(childScope.param).to.have.property(property, extended[property]);
                             })
                         })
                     })
                 })
 
-                describe('test results', function () {
+                describe('test body', function () {
+                    var body = {
+                        key1: 'value1',
+                        key2: 'value2'
+                    }
+                    beforeEach(function () {
+                        scope.setBody(body);
+                    })
+
+                    it('should get the body', function () {
+                        expect(scope.body).to.eql(body);
+                    });
+
+                    describe('test body for child scope', function () {
+                        var childScope,
+                            childBody = {
+                                key2: 'childValue2',
+                                key3: 'childValue3'
+                            }
+                        beforeEach(function () {
+                            childScope = scope.new();
+                            childScope.setBody(childBody);
+                        });
+
+                        it('should get the body', function () {
+                            expect(childScope.body).to.eql(extend({}, body, childBody));
+                        });
+
+                        it('should inherit body from the parent', function () {
+                            var extended = extend({}, body, childBody);
+                            Object.keys(extended).forEach(function (property) {
+                                expect(childScope.body).to.have.property(property, extended[property]);
+                            })
+                        })
+                    })
+                })
+
+                describe('test query', function () {
+                    var query = {
+                        key1: 'value1',
+                        key2: 'value2'
+                    }
+                    beforeEach(function () {
+                        scope.setQuery(query);
+                    })
+
+                    it('should get the query', function () {
+                        expect(scope.query).to.eql(query);
+                    });
+
+                    describe('test query for child scope', function () {
+                        var childScope,
+                            childQuery = {
+                                key2: 'childValue2',
+                                key3: 'childValue3'
+                            }
+                        beforeEach(function () {
+                            childScope = scope.new();
+                            childScope.setQuery(childQuery);
+                        });
+
+                        it('should get the query', function () {
+                            expect(childScope.query).to.eql(extend({}, query, childQuery));
+                        });
+
+                        it('should inherit query from the parent', function () {
+                            var extended = extend({}, query, childQuery);
+                            Object.keys(extended).forEach(function (property) {
+                                expect(childScope.query).to.have.property(property, extended[property]);
+                            })
+                        })
+                    })
+                })
+
+                describe('test result', function () {
                     var results = {
                         key1: 'value1',
                         key2: 'value2'
                     }
 
-                    beforeEach(function(){
-                        Object.keys(results).forEach(function(property){
-                           scope.addResult(property, results[property]);
+                    beforeEach(function () {
+                        Object.keys(results).forEach(function (property) {
+                            scope.addResult(property, results[property]);
                         });
                     })
 
-                    it("should be able to access the results", function(){
+                    it("should be able to access the results", function () {
                         expect(scope.results).to.eql(results);
                     })
 
@@ -252,17 +326,16 @@
                             }
                         beforeEach(function () {
                             childScope = scope.new();
-                            Object.keys(childResults).forEach(function(property){
-                                scope.addResult(property, childResults[property]);
+                            Object.keys(childResults).forEach(function (property) {
+                                childScope.addResult(property, childResults[property]);
                             });
                         });
 
-                        it("should be able to access the results", function(){
+                        it("should be able to access the results", function () {
                             expect(childScope.results).to.eql(extend({}, results, childResults));
                         })
                     })
                 })
-
 
                 describe('test errors', function () {
                     var results = {
@@ -270,13 +343,13 @@
                         key2: 'value2'
                     }
 
-                    beforeEach(function(){
-                        Object.keys(results).forEach(function(property){
+                    beforeEach(function () {
+                        Object.keys(results).forEach(function (property) {
                             scope.addError(property, results[property]);
                         });
                     })
 
-                    it("should be able to access the results", function(){
+                    it("should be able to access the results", function () {
                         expect(scope.errors).to.eql(results);
                     })
 
@@ -288,12 +361,12 @@
                             }
                         beforeEach(function () {
                             childScope = scope.new();
-                            Object.keys(childResults).forEach(function(property){
+                            Object.keys(childResults).forEach(function (property) {
                                 childScope.addError(property, childResults[property]);
                             });
                         });
 
-                        it("should be able to access the results", function(){
+                        it("should be able to access the results", function () {
                             expect(childScope.errors).to.eql(extend({}, results, childResults));
                         })
                     })

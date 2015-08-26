@@ -10,6 +10,7 @@
         Promise = require('bluebird'),
         chai = require('chai'),
         supertest = require('supertest-as-promised'),
+        bodyParser = require('body-parser'),
         expect = chai.expect;
 
     describe("Test express composer composition and routes", function () {
@@ -186,7 +187,7 @@
                                         path: path.route,
                                         methods: {
                                             get: {
-                                                validator: schema.validate.bind(schema),
+                                                validator: {query: schema.validate.bind(schema)},
                                                 handlers: [handlers.respond(message)[handlerType]]
                                             }
                                         }
@@ -229,7 +230,7 @@
                                         path: path.route,
                                         methods: {
                                             get: {
-                                                validator: schema.validate.bind(schema),
+                                                validator: {query: schema.validate.bind(schema)},
                                                 handlers: handlers.respond(message)[handlerType]
                                             }
                                         }
@@ -1094,7 +1095,7 @@
                         routes: {
                             methods: {
                                 get: {
-                                    handlers: [function undefinedValue (req, res) {
+                                    handlers: [function undefinedValue(req, res) {
                                         return;
                                     },
                                         function (req, res) {
@@ -1132,7 +1133,7 @@
                         routes: {
                             methods: {
                                 get: {
-                                    handlers: [function sendNow (req, res) {
+                                    handlers: [function sendNow(req, res) {
                                         res.send(message);
                                     },
                                         function (req, res) {
@@ -1203,7 +1204,7 @@
                                     handlers: [function (req, res) {
                                         throw new Error(message);
                                     }],
-                                    errorHandlers: [function message (err) {
+                                    errorHandlers: [function message(err) {
                                         return err.message
                                     },
                                         function (err) {
@@ -1234,7 +1235,7 @@
                                     handlers: [function (req, res) {
                                         throw new Error(message);
                                     }],
-                                    errorHandlers: [function message (err) {
+                                    errorHandlers: [function message(err) {
                                         return err.message
                                     },
                                         function (err) {
@@ -1268,7 +1269,7 @@
                                     handlers: [function (req, res) {
                                         throw new Error(message);
                                     }],
-                                    errorHandlers: [function message (err) {
+                                    errorHandlers: [function message(err) {
                                         return err.message
                                     }, function (err, req, res) {
                                         res.status(500).send(this.errors.message);
@@ -1368,7 +1369,218 @@
 
         });
 
-        describe('test validator of a route', function () {
+        describe('test validators', function () {
+            describe('test default', function () {
+                var app,
+                    message = {
+                        message: 'hello world'
+                    },
+                    validator = joi.object({
+                        message: joi.string().required()
+                    }),
+                    request,
+                    score = {
+                        routers: {
+                            routes: {
+                                methods: {
+                                    post: {
+                                        validator: validator.validate.bind(validator),
+                                        handlers: function (req, res) {
+                                            return res.status(200).json(this.body);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                beforeEach(function () {
+                    app = expressComposer();
+                    app.use(bodyParser.json());
+                    app.conduct(score);
+                    request = supertest(app);
+                });
+
+                it('should return 400 for an invalid body', function () {
+                    return request
+                        .post('/')
+                        .set('content-type', 'application/json')
+                        .send({not: 'good'})
+                        .expect(400)
+                });
+
+                it('should validate body', function () {
+                    return request
+                        .post('/')
+                        .set('content-type', 'application/json')
+                        .send(message)
+                        .expect(200)
+                        .then(function (response) {
+                            expect(response.body).to.eql(message);
+                        })
+                });
+
+            })
+
+            describe('test body', function () {
+                var app,
+                    message = {
+                        message: 'hello world'
+                    },
+                    validator = joi.object({
+                        message: joi.string().required()
+                    }),
+                    request,
+                    score = {
+                        routers: {
+                            routes: {
+                                methods: {
+                                    post: {
+                                        validator: {
+                                            body: validator.validate.bind(validator)
+                                        },
+                                        handlers: function (req, res) {
+                                            return res.status(200).json(this.body);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                beforeEach(function () {
+                    app = expressComposer();
+                    app.use(bodyParser.json());
+                    app.conduct(score);
+                    request = supertest(app);
+                });
+
+                it('should return 400 for an invalid body', function () {
+                    return request
+                        .post('/')
+                        .set('content-type', 'application/json')
+                        .send({not: 'good'})
+                        .expect(400)
+                });
+
+                it('should validate body', function () {
+                    return request
+                        .post('/')
+                        .set('content-type', 'application/json')
+                        .send(message)
+                        .expect(200)
+                        .then(function (response) {
+                            expect(response.body).to.eql(message);
+                        })
+                });
+
+            })
+            describe('test query', function () {
+                var app,
+                    message = {
+                        message: 'hello world'
+                    },
+                    validator = joi.object({
+                        message: joi.string().required()
+                    }),
+                    request,
+                    score = {
+                        routers: {
+                            routes: {
+                                methods: {
+                                    post: {
+                                        validator: {
+                                            query: validator.validate.bind(validator)
+                                        },
+                                        handlers: function (req, res) {
+                                            return res.status(200).json(this.query);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                beforeEach(function () {
+                    app = expressComposer();
+                    app.use(bodyParser.json());
+                    app.conduct(score);
+                    request = supertest(app);
+                });
+
+                it('should return 400 for an invalid body', function () {
+                    return request
+                        .post('/?not=good')
+                        .send({not: 'good'})
+                        .expect(400)
+                });
+
+                it('should validate body', function () {
+                    return request
+                        .post('/?message=' + message.message)
+                        .send(message)
+                        .expect(200)
+                        .then(function (response) {
+                            expect(response.body).to.eql(message);
+                        })
+                });
+
+            })
+
+            describe('test param', function () {
+                var app,
+                    message = {
+                        message: 8
+                    },
+                    validator = joi.object({
+                        message: joi.number().required()
+                    }),
+                    request,
+                    score = {
+                        routers: {
+                            routes: {
+                                path: '/:message',
+                                methods: {
+                                    post: {
+                                        validator: {
+                                            param: validator.validate.bind(validator)
+                                        },
+                                        handlers: function (req, res) {
+                                            return res.status(200).json(this.param);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                beforeEach(function () {
+                    app = expressComposer();
+                    app.use(bodyParser.json());
+                    app.conduct(score);
+                    request = supertest(app);
+                });
+
+                it('should return 400 for an invalid body', function () {
+                    return request
+                        .post('/notANumber')
+                        .set('content-type', 'application/json')
+                        .send({not: 'good'})
+                        .expect(400)
+                });
+
+                it('should validate body', function () {
+                    return request
+                        .post('/' + message.message)
+                        .set('content-type', 'application/json')
+                        .send(message)
+                        .expect(200)
+                        .then(function (response) {
+                            expect(response.body).to.eql(message);
+                        })
+                });
+
+            })
 
         });
 
@@ -1787,7 +1999,7 @@
                     routers: {
                         routes: {
                             path: '/:num',
-                            preHandlers: function number (req) {
+                            preHandlers: function number(req) {
                                 return req.params.num
                             },
                             methods: {

@@ -1,6 +1,6 @@
 {
   "name": "express-composer",
-  "version": "0.2.8",
+  "version": "0.3.0",
   "description": "A composition library to help organize your express routes and handlers",
   "main": "index.js",
   "scripts": {
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/Jhorlin/express-composer",
   "devDependencies": {
+    "body-parser": "^1.13.3",
     "chai": "^3.2.0",
     "express": "^4.13.3",
     "gulp": "^3.9.0",

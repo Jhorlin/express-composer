@@ -7,6 +7,7 @@
         chai = require('chai'),
         superTest = require('supertest-as-promised'),
         Promise = require('bluebird'),
+        bodyParser = require('body-parser'),
         expect = chai.expect;
 
     describe("test composer", function () {
@@ -46,7 +47,7 @@
                     it("should create a score and compose an app with the message 'Hello World!' in nested routes", function () {
                         var scoreConfig = {
                             routers: [{
-                                routers:[{
+                                routers: [{
                                     routes: [{
                                         methods: {
                                             get: {
@@ -246,7 +247,7 @@
                                 routes: [{
                                     methods: {
                                         get: {
-                                            validator: 'test/validators/key',
+                                            validator: {query: 'test/validators/key'},
                                             handlers: ['test/modules/handlers/helloWorld']
                                         }
                                     }
@@ -270,7 +271,7 @@
                                 routes: [{
                                     methods: {
                                         get: {
-                                            validator: 'test/validators/user',
+                                            validator: {query: 'test/validators/user'},
                                             handlers: ['test/modules/handlers/helloWorld']
                                         }
                                     }
@@ -448,7 +449,7 @@
                     it("should create a score and compose an app with the message 'Hello World!' in nested routes", function () {
                         var scoreConfig = {
                             routers: {
-                                routers:{
+                                routers: {
                                     routes: {
                                         methods: {
                                             get: {
@@ -648,7 +649,7 @@
                                 routes: {
                                     methods: {
                                         get: {
-                                            validator: 'test/validators/key',
+                                            validator: {query: 'test/validators/key'},
                                             handlers: 'test/modules/handlers/helloWorld'
                                         }
                                     }
@@ -672,7 +673,7 @@
                                 routes: {
                                     methods: {
                                         get: {
-                                            validator: 'test/validators/user',
+                                            validator: {query: 'test/validators/user'},
                                             handlers: 'test/modules/handlers/helloWorld'
                                         }
                                     }
@@ -929,6 +930,132 @@
                                 });
                         });
                     });
+
+                    it('should validate the body by default', function () {
+                        var scoreConfig = {
+                                routers: {
+                                    routes: {
+                                        methods: {
+                                            post: {
+                                                validator: 'test/modules/validators/number',
+                                                handlers: 'test/modules/handlers/getBody'
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            body = {
+                                value: 5
+                            };
+
+                        return Promise.resolve(scoreFactory[method](scoreConfig)).then(function (score) {
+                            app.use(bodyParser.json());
+                            app.conduct(score);
+                            return request
+                                .post('/')
+                                .set('content-type', 'application/json')
+                                .send(body)
+                                .expect(200)
+                                .then(function (res) {
+                                    expect(res.body).to.eql(body);
+                                });
+                        });
+                    });
+
+                    it('should validate the body', function () {
+                        var scoreConfig = {
+                                routers: {
+                                    routes: {
+                                        methods: {
+                                            post: {
+                                                validator: {
+                                                    body: 'test/modules/validators/number'
+                                                },
+                                                handlers: 'test/modules/handlers/getBody'
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            body = {
+                                value: 5
+                            };
+
+                        return Promise.resolve(scoreFactory[method](scoreConfig)).then(function (score) {
+                            app.use(bodyParser.json());
+                            app.conduct(score);
+                            return request
+                                .post('/')
+                                .set('content-type', 'application/json')
+                                .send(body)
+                                .expect(200)
+                                .then(function (res) {
+                                    expect(res.body).to.eql(body);
+                                });
+                        });
+                    });
+
+                    it('should validate query', function () {
+                        var scoreConfig = {
+                                routers: {
+                                    routes: {
+                                        methods: {
+                                            post: {
+                                                validator: {
+                                                    query: 'test/modules/validators/number'
+                                                },
+                                                handlers: 'test/modules/handlers/getQuery'
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            body = {
+                                value: 5
+                            };
+
+                        return Promise.resolve(scoreFactory[method](scoreConfig)).then(function (score) {
+                            app.conduct(score);
+                            return request
+                                .post('/?value=' + body.value)
+                                .expect(200)
+                                .then(function (res) {
+                                    expect(res.body).to.eql(body);
+                                });
+                        });
+                    });
+
+                    it('should validate route', function () {
+                        var scoreConfig = {
+                                routers: {
+                                    routes: {
+                                        path:'/:value',
+                                        methods: {
+                                            post: {
+                                                validator: {
+                                                    param: 'test/modules/validators/number'
+                                                },
+                                                handlers: 'test/modules/handlers/getParam'
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            body = {
+                                value: 5
+                            };
+
+                        return Promise.resolve(scoreFactory[method](scoreConfig)).then(function (score) {
+                            app.conduct(score);
+                            return request
+                                .post('/' + body.value)
+                                .expect(200)
+                                .then(function (res) {
+                                    expect(res.body).to.eql(body);
+                                });
+                        });
+                    });
+
 
                 })
             });
