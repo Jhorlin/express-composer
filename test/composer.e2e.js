@@ -192,30 +192,6 @@
 
                     });
 
-                    it("should create a score and compose an app with a method preHandler and a route get message of 'Hello World!'", function () {
-                        var scoreConfig = {
-                            routers: [{
-                                routes: [{
-                                    methods: {
-                                        get: {
-                                            preHandlers: ['test/modules/handlers/setScopeMessage'],
-                                            handlers: ['test/modules/handlers/getScopeMessage']
-                                        }
-                                    }
-                                }]
-                            }]
-                        };
-                        return Promise.resolve(scoreFactory[method](scoreConfig)).then(function (score) {
-                            app.conduct(score);
-                            return request
-                                .get('/')
-                                .expect(200)
-                                .then(function (res) {
-                                    expect(res.text).to.equal('Hello World!');
-                                });
-                        });
-                    });
-
                     it("should create a score and compose an app with a app preHandler and a route get message of 'Hello World!'", function () {
                         var scoreConfig = {
                             preHandlers: ['test/modules/handlers/setScopeMessage'],
@@ -593,30 +569,6 @@
                                 });
                         });
 
-                    });
-
-                    it("should create a score and compose an app with a method preHandler and a route get message of 'Hello World!'", function () {
-                        var scoreConfig = {
-                            routers: {
-                                routes: {
-                                    methods: {
-                                        get: {
-                                            preHandlers: 'test/modules/handlers/setScopeMessage',
-                                            handlers: 'test/modules/handlers/getScopeMessage'
-                                        }
-                                    }
-                                }
-                            }
-                        };
-                        return Promise.resolve(scoreFactory[method](scoreConfig)).then(function (score) {
-                            app.conduct(score);
-                            return request
-                                .get('/')
-                                .expect(200)
-                                .then(function (res) {
-                                    expect(res.text).to.equal('Hello World!');
-                                });
-                        });
                     });
 
                     it("should create a score and compose an app with a app preHandler and a route get message of 'Hello World!'", function () {
