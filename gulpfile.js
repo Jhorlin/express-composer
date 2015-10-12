@@ -124,6 +124,7 @@
     });
 
     gulp.task('docjs2md', function () {
+        streamProcessors = [];
         streamProcessors.push(concat("README.md"));
         streamProcessors.push(docjs2md({template: fs.readFileSync("docjs2md/README.hbs", "utf8")}));
         streamProcessors.push(gulp.dest("."));

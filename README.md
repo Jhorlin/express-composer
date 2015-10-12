@@ -7,8 +7,6 @@ A composition library built by extending [express](http://expressjs.com/)
 [![Dependency Status](https://david-dm.org/jhorlin/express-composer.svg)](https://david-dm.org/jhorlin/express-composer)
 [![devDependency Status](https://david-dm.org/jhorlin/express-composer/dev-status.svg)](https://david-dm.org/jhorlin/express-composer#info=devDependencies)
 
-###[Coverage Report](http://htmlpreview.github.io/?https://github.com/Jhorlin/express-composer/blob/master/reports/coverage.html)
-
 ## Modules
 <table>
   <thead>
