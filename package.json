@@ -1,6 +1,6 @@
 {
   "name": "express-composer",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A composition library to help organize your express routes and handlers",
   "main": "index.js",
   "scripts": {
@@ -44,6 +44,7 @@
     "jshint-stylish": "^2.0.1",
     "mocha": "^2.3.3",
     "run-sequence": "^1.1.4",
+    "supertest": "^1.1.0",
     "supertest-as-promised": "^2.0.2"
   },
   "dependencies": {
@@ -54,7 +55,6 @@
     "joi": "^6.9.0",
     "methods": "^1.1.1",
     "node-uuid": "^1.4.3",
-    "supertest": "^1.1.0",
     "utils-merge": "^1.0.0",
     "vhost": "^3.0.2"
   }
