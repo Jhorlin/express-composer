@@ -1,6 +1,6 @@
 {
   "name": "express-composer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A composition library to help organize your express routes and handlers",
   "main": "index.js",
   "scripts": {
@@ -46,9 +46,6 @@
     "run-sequence": "^1.1.4",
     "supertest-as-promised": "^2.0.2"
   },
-  "peerDependencies": {
-    "express": ">4.0.0"
-  },
   "dependencies": {
     "async-require": "^1.2.1",
     "bluebird": "^2.10.2",
@@ -59,6 +56,6 @@
     "node-uuid": "^1.4.3",
     "supertest": "^1.1.0",
     "utils-merge": "^1.0.0",
-    "vhost": "^3.0.1"
+    "vhost": "^3.0.2"
   }
 }
