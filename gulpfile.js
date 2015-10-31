@@ -9,6 +9,7 @@
         coveralls = require('gulp-coveralls'),
         cover = require('gulp-coverage'),
         jshint = require('gulp-jshint'),
+        eslint = require('gulp-eslint'),
         stylish = require('jshint-stylish'),
         jsinspect = require('gulp-jsinspect'),
         nsp = require('gulp-nsp'),
@@ -72,6 +73,12 @@
         streamProcessors.push(jshint.reporter(stylish));
     });
 
+    gulp.task('eslint', function () {
+        streamProcessors.push(eslint());
+        streamProcessors.push(eslint.format());
+        streamProcessors.push(eslint.failAfterError());
+    });
+
     gulp.task('instrument', function () {
         streamProcessors.push(cover.instrument({pattern: paths.src}));
     });
@@ -130,27 +137,27 @@
         streamProcessors.push(gulp.dest("."));
     })
 
-    gulp.task('track', ['lcov', 'coveralls', 'process'])
+    gulp.task('track', ['lcov', 'coveralls', 'process']);
 
     /** tasks **/
 
-    gulp.task('test:unit', ['unit', 'mocha', 'process'])
+    gulp.task('test:unit', ['unit', 'mocha', 'process']);
 
-    gulp.task('test:e2e', ['e2e', 'mocha', 'process'])
+    gulp.task('test:e2e', ['e2e', 'mocha', 'process']);
 
     gulp.task('test', function () {
         return runSequence(['test:unit', 'test:e2e']);
-    })
+    });
 
-    gulp.task('test', ['e2e:unit', 'mocha', 'process'])
+    gulp.task('test', ['e2e:unit', 'mocha', 'process']);
 
-    gulp.task('quality', ['src', 'buddy', 'jsinspect', 'process'])
+    gulp.task('quality', ['src', 'buddy', 'jsinspect', 'process']);
 
     gulp.task('secure', ['nsp']);
 
-    gulp.task('doc', ['src', 'docjs2md', 'process'])
+    gulp.task('doc', ['src', 'docjs2md', 'process']);
 
-    gulp.task('style', ['src', 'jshint', 'jscs', 'process']);
+    gulp.task('style', ['src', 'eslint', 'jshint', 'jscs', 'process']);
 
     gulp.task('cover', ['e2e:unit', 'instrument', 'mocha', 'gather', 'format', 'report', 'enforce', 'process']);
 
